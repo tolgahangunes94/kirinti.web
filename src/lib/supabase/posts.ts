@@ -1,0 +1,57 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+export type Post = {
+  id: string;
+  user_id: string;
+  location: string | null;
+  description: string;
+  image_url: string | null;
+  likes_count: number;
+  comments_count: number;
+  created_at: string;
+};
+
+export type CreatePostInput = {
+  location?: string | null;
+  description: string;
+  image_url?: string | null;
+};
+
+export async function getPosts(
+  supabase: SupabaseClient,
+  limit = 20,
+): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createPost(
+  supabase: SupabaseClient,
+  input: CreatePostInput,
+): Promise<Post> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Gönderi paylaşmak için giriş yapmalısın.");
+
+  const { data, error } = await supabase
+    .from("posts")
+    .insert({
+      user_id: user.id,
+      location: input.location || null,
+      description: input.description,
+      image_url: input.image_url || null,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
