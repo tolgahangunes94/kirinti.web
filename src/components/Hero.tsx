@@ -70,7 +70,7 @@ export default function Hero() {
               Potansiyel Altın Dere Haritası
             </h2>
             <a
-              href="#"
+              href="/harita"
               className="shrink-0 text-xs font-medium text-accent transition-colors hover:text-accent-strong"
             >
               Tüm Harita &rarr;

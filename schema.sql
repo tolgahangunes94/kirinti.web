@@ -207,3 +207,26 @@ create trigger on_post_like_created
 create trigger on_post_like_deleted
   after delete on public.post_likes
   for each row execute procedure public.handle_post_likes_count();
+
+-- geological_zones tablosu (Jeolojik Bölgeler)
+
+create table public.geological_zones (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  zone_type text not null, -- 'quartz_vein', 'geothermal', 'mineral_deposit'
+  city text,
+  region text,
+  description text,
+  potential_level text, -- 'Yüksek', 'Orta', 'Araştırılıyor'
+  latitude double precision not null,
+  longitude double precision not null,
+  created_at timestamptz default now()
+);
+
+alter table public.geological_zones enable row level security;
+
+create policy "Geological zones herkese açık"
+on public.geological_zones
+for select
+to public
+using (true);

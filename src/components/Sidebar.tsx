@@ -25,6 +25,7 @@ function Icon({ children }: IconProps) {
 type NavItem = {
   label: string;
   icon: React.ReactNode;
+  href?: string;
 };
 
 type NavGroup = {
@@ -38,6 +39,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       {
         label: "Potansiyel Altın Haritası",
+        href: "/harita",
         icon: (
           <Icon>
             <path d="M2 5.5 7 4l6 2 5-1.5v10L13 16l-6-2-5 1.5v-10Z" />
@@ -180,7 +182,7 @@ export default function Sidebar() {
               {group.items.map((item) => (
                 <li key={item.label}>
                   <a
-                    href="#"
+                    href={item.href ?? "#"}
                     className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
                   >
                     <span className="text-accent/70">{item.icon}</span>
