@@ -26,6 +26,7 @@ type NavItem = {
   label: string;
   icon: React.ReactNode;
   href?: string;
+  comingSoon?: boolean;
 };
 
 type NavGroup = {
@@ -35,10 +36,10 @@ type NavGroup = {
 
 const NAV_GROUPS: NavGroup[] = [
   {
-    title: "Keşfet",
+    title: "Keşfet & Saha",
     items: [
       {
-        label: "Potansiyel Altın Haritası",
+        label: "Harita & Bölgeler",
         href: "/harita",
         icon: (
           <Icon>
@@ -48,24 +49,8 @@ const NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        label: "Bölgeler",
-        icon: (
-          <Icon>
-            <path d="M10 2 2 6.5 10 11l8-4.5L10 2Z" />
-            <path d="m2 10 8 4.5L18 10M2 13.5 10 18l8-4.5" />
-          </Icon>
-        ),
-      },
-      {
-        label: "Keşif Kayıtları",
-        icon: (
-          <Icon>
-            <path d="M5 2.5h8a1 1 0 0 1 1 1V17l-5-2.5L4 17V3.5a1 1 0 0 1 1-1Z" />
-          </Icon>
-        ),
-      },
-      {
-        label: "Jeoloji Rehberi",
+        label: "Saha Rehberi",
+        href: "/rehber",
         icon: (
           <Icon>
             <path d="M2 15.5 7 6l3 5 2-3 6 7.5H2Z" />
@@ -73,11 +58,11 @@ const NAV_GROUPS: NavGroup[] = [
         ),
       },
       {
-        label: "Altın Rehberi",
+        label: "Keşif Kayıtları",
+        href: "/kesifler",
         icon: (
           <Icon>
-            <circle cx="10" cy="10" r="7" />
-            <path d="M10 6.5 11.2 9l2.6.3-1.9 1.8.5 2.6L10 12.4l-2.4 1.3.5-2.6-1.9-1.8L8.8 9 10 6.5Z" />
+            <path d="M5 2.5h8a1 1 0 0 1 1 1V17l-5-2.5L4 17V3.5a1 1 0 0 1 1-1Z" />
           </Icon>
         ),
       },
@@ -87,48 +72,11 @@ const NAV_GROUPS: NavGroup[] = [
     title: "Topluluk",
     items: [
       {
-        label: "Sohbet & Gönderiler",
+        label: "Akış & Gönderiler",
+        href: "/",
         icon: (
           <Icon>
             <path d="M3 4h14v9H8l-4 3v-3H3V4Z" />
-          </Icon>
-        ),
-      },
-      {
-        label: "Sorular",
-        icon: (
-          <Icon>
-            <circle cx="10" cy="10" r="7.5" />
-            <path d="M8 8a2 2 0 1 1 3 1.7c-.7.4-1 .8-1 1.6" />
-            <path d="M10 14.2v.1" />
-          </Icon>
-        ),
-      },
-      {
-        label: "Popüler Konular",
-        icon: (
-          <Icon>
-            <path d="M10 2c2 3-2 4-1 7 .5 1.5 2 2 2.5 3.5.6 1.9-.5 4-3 4.5-3 .6-5.5-1.5-5.5-4.5 0-2 1.2-3 2-4.5C6 6 7.5 3.5 10 2Z" />
-          </Icon>
-        ),
-      },
-      {
-        label: "Takip Edilenler",
-        icon: (
-          <Icon>
-            <circle cx="7" cy="6.5" r="2.5" />
-            <path d="M2.5 16c.6-3 2.3-4.7 4.5-4.7s3.9 1.7 4.5 4.7" />
-            <circle cx="14.5" cy="7" r="2" />
-            <path d="M12.8 11.6c1.8.3 3.1 1.9 3.7 4.4" />
-          </Icon>
-        ),
-      },
-      {
-        label: "Son Aktiviteler",
-        icon: (
-          <Icon>
-            <circle cx="10" cy="10" r="7.5" />
-            <path d="M10 5.5V10l3 2" />
           </Icon>
         ),
       },
@@ -139,27 +87,11 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       {
         label: "Ekipman Kataloğu",
+        comingSoon: true,
         icon: (
           <Icon>
             <path d="M2.5 6 10 2.5 17.5 6 10 9.5 2.5 6Z" />
             <path d="M2.5 6v8L10 17.5m0-8v8m7.5-11.5v8L10 17.5" />
-          </Icon>
-        ),
-      },
-      {
-        label: "İkinci El Pazarı",
-        icon: (
-          <Icon>
-            <path d="M3 6h14l-1 9.5a1 1 0 0 1-1 .9H5a1 1 0 0 1-1-.9L3 6Z" />
-            <path d="M7 6V5a3 3 0 0 1 6 0v1" />
-          </Icon>
-        ),
-      },
-      {
-        label: "Ekipman İncelemeleri",
-        icon: (
-          <Icon>
-            <path d="M10 3 11.6 6.6l3.9.4-2.9 2.7.8 3.9L10 11.7l-3.4 1.9.8-3.9-2.9-2.7 3.9-.4L10 3Z" />
           </Icon>
         ),
       },
@@ -181,13 +113,26 @@ export default function Sidebar() {
             <ul className="mt-2 space-y-0.5">
               {group.items.map((item) => (
                 <li key={item.label}>
-                  <a
-                    href={item.href ?? "#"}
-                    className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
-                  >
-                    <span className="text-accent/70">{item.icon}</span>
-                    <span className="truncate">{item.label}</span>
-                  </a>
+                  {item.comingSoon ? (
+                    <span
+                      aria-disabled="true"
+                      className="flex cursor-default items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted/60"
+                    >
+                      <span className="text-accent/40">{item.icon}</span>
+                      <span className="truncate">{item.label}</span>
+                      <span className="ml-auto shrink-0 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium text-muted">
+                        Yakında
+                      </span>
+                    </span>
+                  ) : (
+                    <a
+                      href={item.href ?? "#"}
+                      className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted transition-colors hover:bg-surface-2 hover:text-foreground"
+                    >
+                      <span className="text-accent/70">{item.icon}</span>
+                      <span className="truncate">{item.label}</span>
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
