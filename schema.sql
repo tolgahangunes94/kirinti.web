@@ -114,3 +114,96 @@ create policy "posts bucket kullanıcı kendi dosyasını siler"
     bucket_id = 'posts'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
+
+-- post_comments tablosu (Yorumlar)
+
+create table if not exists public.post_comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts (id) on delete cascade,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  content text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.post_comments enable row level security;
+
+create policy "Yorumlar herkese açık"
+  on public.post_comments for select
+  using (true);
+
+create policy "Kullanıcı kendi yorumunu oluşturur"
+  on public.post_comments for insert
+  with check (auth.uid() = user_id);
+
+create policy "Kullanıcı kendi yorumunu siler"
+  on public.post_comments for delete
+  using (auth.uid() = user_id);
+
+-- Yeni yorum eklenince/silinince gönderideki comments_count sayacını günceller
+create or replace function public.handle_post_comments_count()
+returns trigger as $$
+begin
+  if (tg_op = 'INSERT') then
+    update public.posts set comments_count = comments_count + 1 where id = new.post_id;
+    return new;
+  elsif (tg_op = 'DELETE') then
+    update public.posts set comments_count = greatest(comments_count - 1, 0) where id = old.post_id;
+    return old;
+  end if;
+  return null;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+create trigger on_post_comment_created
+  after insert on public.post_comments
+  for each row execute procedure public.handle_post_comments_count();
+
+create trigger on_post_comment_deleted
+  after delete on public.post_comments
+  for each row execute procedure public.handle_post_comments_count();
+
+-- post_likes tablosu (Beğeniler)
+
+create table if not exists public.post_likes (
+  post_id uuid not null references public.posts (id) on delete cascade,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (post_id, user_id)
+);
+
+alter table public.post_likes enable row level security;
+
+create policy "Beğeniler herkese açık"
+  on public.post_likes for select
+  using (true);
+
+create policy "Kullanıcı kendi beğenisini oluşturur"
+  on public.post_likes for insert
+  with check (auth.uid() = user_id);
+
+create policy "Kullanıcı kendi beğenisini siler"
+  on public.post_likes for delete
+  using (auth.uid() = user_id);
+
+-- Yeni beğeni eklenince/silinince gönderideki likes_count sayacını günceller
+create or replace function public.handle_post_likes_count()
+returns trigger as $$
+begin
+  if (tg_op = 'INSERT') then
+    update public.posts set likes_count = likes_count + 1 where id = new.post_id;
+    return new;
+  elsif (tg_op = 'DELETE') then
+    update public.posts set likes_count = greatest(likes_count - 1, 0) where id = old.post_id;
+    return old;
+  end if;
+  return null;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+create trigger on_post_like_created
+  after insert on public.post_likes
+  for each row execute procedure public.handle_post_likes_count();
+
+create trigger on_post_like_deleted
+  after delete on public.post_likes
+  for each row execute procedure public.handle_post_likes_count();

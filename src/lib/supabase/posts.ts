@@ -9,6 +9,7 @@ export type Post = {
   likes_count: number;
   comments_count: number;
   created_at: string;
+  liked_by_me?: boolean;
 };
 
 export type CreatePostInput = {
@@ -45,6 +46,20 @@ export async function getPostsByUserId(
 
   if (error) throw error;
   return data ?? [];
+}
+
+export async function getPostById(
+  supabase: SupabaseClient,
+  id: string,
+): Promise<Post | null> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
 }
 
 export async function createPost(

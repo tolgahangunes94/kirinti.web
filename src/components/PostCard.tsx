@@ -1,4 +1,6 @@
+import Link from "next/link";
 import type { Post } from "@/lib/supabase/posts";
+import LikeButton from "@/components/LikeButton";
 
 function PostIcon() {
   return (
@@ -63,22 +65,15 @@ export default function PostCard({ post }: PostCardProps) {
         </p>
 
         <div className="mt-3 flex items-center gap-4 text-xs text-muted">
-          <span className="flex items-center gap-1.5">
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-            >
-              <path d="M10 17s-6.5-4-6.5-9A3.5 3.5 0 0 1 10 6a3.5 3.5 0 0 1 6.5 2c0 5-6.5 9-6.5 9Z" />
-            </svg>
-            {post.likes_count}
-          </span>
-          <span className="flex items-center gap-1.5">
+          <LikeButton
+            postId={post.id}
+            initialLikesCount={post.likes_count}
+            initiallyLiked={post.liked_by_me}
+          />
+          <Link
+            href={`/post/${post.id}`}
+            className="flex items-center gap-1.5 transition-colors hover:text-foreground"
+          >
             <svg
               width="14"
               height="14"
@@ -92,7 +87,7 @@ export default function PostCard({ post }: PostCardProps) {
               <path d="M3 4h14v9H8l-4 3v-3H3V4Z" />
             </svg>
             {post.comments_count}
-          </span>
+          </Link>
         </div>
       </div>
     </article>

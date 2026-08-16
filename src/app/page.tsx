@@ -8,11 +8,28 @@ import CommunityCta from "@/components/CommunityCta";
 import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabase/server";
 import { getPosts, type Post } from "@/lib/supabase/posts";
+import { getLikedPostIds } from "@/lib/supabase/likes";
 
 async function loadPosts(): Promise<Post[]> {
   try {
     const supabase = await createClient();
-    return await getPosts(supabase);
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const posts = await getPosts(supabase);
+    if (!user) return posts;
+
+    const likedIds = await getLikedPostIds(
+      supabase,
+      user.id,
+      posts.map((post) => post.id),
+    );
+
+    return posts.map((post) => ({
+      ...post,
+      liked_by_me: likedIds.has(post.id),
+    }));
   } catch {
     return [];
   }
