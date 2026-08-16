@@ -62,6 +62,22 @@ export async function getPostById(
   return data;
 }
 
+export async function deletePost(
+  supabase: SupabaseClient,
+  postId: string,
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("posts")
+    .delete()
+    .eq("id", postId)
+    .select();
+
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error("Gönderi silinemedi. Bu gönderinin sahibi olmayabilirsin.");
+  }
+}
+
 export async function createPost(
   supabase: SupabaseClient,
   input: CreatePostInput,

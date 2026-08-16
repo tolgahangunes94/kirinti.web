@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
-import PostCard from "@/components/PostCard";
+import PostDetail from "@/components/PostDetail";
 import CommentForm from "@/components/CommentForm";
 import CommentItem from "@/components/CommentItem";
 import { createClient } from "@/lib/supabase/server";
@@ -27,13 +27,22 @@ export default async function PostPage({ params }: PostPageProps) {
     ? await getLikedPostIds(supabase, user.id, [post.id])
     : new Set<string>();
 
+  const { data: author } = await supabase
+    .from("profiles")
+    .select("full_name, avatar_url")
+    .eq("id", post.user_id)
+    .single();
+
   const comments = await getCommentsByPostId(supabase, id);
 
   return (
     <>
       <Header />
       <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10 sm:px-8 sm:py-16">
-        <PostCard post={{ ...post, liked_by_me: likedIds.has(post.id) }} />
+        <PostDetail
+          post={{ ...post, liked_by_me: likedIds.has(post.id) }}
+          author={author}
+        />
 
         <h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">
           Yorumlar

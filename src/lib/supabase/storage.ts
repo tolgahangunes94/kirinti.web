@@ -35,3 +35,19 @@ export async function uploadPostImage(
 
   return { path, url: getPostImageUrl(path) };
 }
+
+export async function deletePostImage(imageUrl: string | null): Promise<void> {
+  if (!imageUrl) return;
+
+  const marker = `/storage/v1/object/public/${POSTS_BUCKET}/`;
+  const markerIndex = imageUrl.indexOf(marker);
+  if (markerIndex === -1) return;
+
+  const path = imageUrl.slice(markerIndex + marker.length);
+  if (!path) return;
+
+  const supabase = createClient();
+  const { error } = await supabase.storage.from(POSTS_BUCKET).remove([path]);
+
+  if (error) throw error;
+}
