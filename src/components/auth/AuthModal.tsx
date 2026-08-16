@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-
-type Mode = "sign-in" | "sign-up";
+import { useAuthForm, type Mode } from "./useAuthForm";
+import AuthFormFields from "./AuthFormFields";
 
 type AuthModalProps = {
   open: boolean;
@@ -16,13 +15,23 @@ export default function AuthModal({
   initialMode = "sign-in",
   onClose,
 }: AuthModalProps) {
-  const [mode, setMode] = useState<Mode>(initialMode);
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const {
+    mode,
+    setMode,
+    fullName,
+    setFullName,
+    email,
+    setEmail,
+    password,
+    setPassword,
+    loading,
+    error,
+    setError,
+    message,
+    setMessage,
+    handleSubmit,
+  } = useAuthForm({ initialMode, onAuthSuccess: onClose });
+
   const [prevOpen, setPrevOpen] = useState(open);
 
   if (open !== prevOpen) {
@@ -35,34 +44,6 @@ export default function AuthModal({
   }
 
   if (!open) return null;
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setMessage(null);
-
-    const supabase = createClient();
-
-    if (mode === "sign-in") {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) setError(error.message);
-      else onClose();
-    } else {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { full_name: fullName } },
-      });
-      if (error) setError(error.message);
-      else setMessage("Kayıt başarılı! E-postanı doğrulamayı unutma.");
-    }
-
-    setLoading(false);
-  }
 
   return (
     <>
@@ -98,102 +79,20 @@ export default function AuthModal({
               : "Topluluğa katılmak için birkaç bilgi yeter."}
           </p>
 
-          <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-            {mode === "sign-up" && (
-              <div>
-                <label
-                  htmlFor="fullName"
-                  className="text-xs font-medium text-muted"
-                >
-                  Ad Soyad
-                </label>
-                <input
-                  id="fullName"
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
-                />
-              </div>
-            )}
-
-            <div>
-              <label
-                htmlFor="email"
-                className="text-xs font-medium text-muted"
-              >
-                E-posta
-              </label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="text-xs font-medium text-muted"
-              >
-                Şifre
-              </label>
-              <input
-                id="password"
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
-              />
-            </div>
-
-            {error && <p className="text-sm text-red-400">{error}</p>}
-            {message && <p className="text-sm text-green-400">{message}</p>}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="mt-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong disabled:opacity-60"
-            >
-              {loading
-                ? "Lütfen bekle..."
-                : mode === "sign-in"
-                  ? "Giriş Yap"
-                  : "Kayıt Ol"}
-            </button>
-          </form>
-
-          <p className="mt-5 text-center text-sm text-muted">
-            {mode === "sign-in" ? (
-              <>
-                Hesabın yok mu?{" "}
-                <button
-                  type="button"
-                  onClick={() => setMode("sign-up")}
-                  className="font-medium text-accent hover:text-accent-strong"
-                >
-                  Kayıt ol
-                </button>
-              </>
-            ) : (
-              <>
-                Zaten hesabın var mı?{" "}
-                <button
-                  type="button"
-                  onClick={() => setMode("sign-in")}
-                  className="font-medium text-accent hover:text-accent-strong"
-                >
-                  Giriş yap
-                </button>
-              </>
-            )}
-          </p>
+          <AuthFormFields
+            mode={mode}
+            fullName={fullName}
+            setFullName={setFullName}
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            loading={loading}
+            error={error}
+            message={message}
+            onSubmit={handleSubmit}
+            onModeToggle={setMode}
+          />
         </div>
       </div>
     </>

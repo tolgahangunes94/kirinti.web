@@ -31,6 +31,22 @@ export async function getPosts(
   return data ?? [];
 }
 
+export async function getPostsByUserId(
+  supabase: SupabaseClient,
+  userId: string,
+  limit = 20,
+): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function createPost(
   supabase: SupabaseClient,
   input: CreatePostInput,

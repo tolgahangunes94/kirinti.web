@@ -7,6 +7,7 @@ import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { useAuth } from "@/lib/supabase/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
 import CreatePostModal from "@/components/CreatePostModal";
+import { getInitials } from "@/lib/getInitials";
 
 function PlusIcon() {
   return (
@@ -39,16 +40,6 @@ function LogoutIcon() {
       <path d="M8 17H4.5A1.5 1.5 0 0 1 3 15.5v-11A1.5 1.5 0 0 1 4.5 3H8M13 14l4-4-4-4M17 10H7" />
     </svg>
   );
-}
-
-function getInitials(name: string | null | undefined) {
-  if (!name) return "?";
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
 }
 
 export default function Header() {

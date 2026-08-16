@@ -1,17 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useAuth } from "@/lib/supabase/AuthProvider";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
-
-function getInitials(name: string | null) {
-  if (!name) return "?";
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
-}
+import { getInitials } from "@/lib/getInitials";
 
 export default function SidebarProfileCard() {
   const { user, profile, loading } = useAuth();
@@ -50,7 +42,10 @@ export default function SidebarProfileCard() {
   }
 
   return (
-    <div className="border-b border-border p-5">
+    <Link
+      href="/profile"
+      className="block border-b border-border p-5 transition-colors hover:bg-surface-2"
+    >
       <div className="flex items-center gap-3">
         {profile.avatar_url ? (
           <img
@@ -94,6 +89,6 @@ export default function SidebarProfileCard() {
           </div>
         ))}
       </div>
-    </div>
+    </Link>
   );
 }
