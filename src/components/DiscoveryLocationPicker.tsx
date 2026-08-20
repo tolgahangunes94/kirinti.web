@@ -9,6 +9,7 @@ export type DiscoveryPoint = {
 };
 
 type DiscoveryLocationPickerProps = {
+  initialPoint?: DiscoveryPoint | null;
   onChange?: (point: DiscoveryPoint | null) => void;
 };
 
@@ -30,9 +31,10 @@ function PinIcon() {
 }
 
 export default function DiscoveryLocationPicker({
+  initialPoint = null,
   onChange,
 }: DiscoveryLocationPickerProps) {
-  const [point, setPoint] = useState<DiscoveryPoint | null>(null);
+  const [point, setPoint] = useState<DiscoveryPoint | null>(initialPoint);
   const [pickerOpen, setPickerOpen] = useState(false);
 
   function handleConfirm(nextPoint: DiscoveryPoint) {

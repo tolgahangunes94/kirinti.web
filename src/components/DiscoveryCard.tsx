@@ -1,5 +1,6 @@
 import type { Discovery } from "@/lib/supabase/discoveries";
 import DeleteDiscoveryButton from "@/components/DeleteDiscoveryButton";
+import EditDiscoveryButton from "@/components/EditDiscoveryButton";
 import PostImage from "@/components/PostImage";
 
 function LocationIcon() {
@@ -54,14 +55,15 @@ export default function DiscoveryCard({ discovery }: DiscoveryCardProps) {
 
   return (
     <article className="relative rounded-2xl border border-border bg-surface p-4 transition-colors hover:border-accent/40">
-      <div className="absolute right-3 top-3">
+      <div className="absolute right-3 top-3 flex items-center gap-1.5">
+        <EditDiscoveryButton discovery={discovery} />
         <DeleteDiscoveryButton
           discoveryId={discovery.id}
           ownerId={discovery.user_id}
         />
       </div>
 
-      <div className="flex items-start justify-between gap-2 pr-8">
+      <div className="flex items-start justify-between gap-2 pr-20">
         <div className="flex items-center gap-1.5 text-xs font-medium text-accent">
           <LocationIcon />
           {location}

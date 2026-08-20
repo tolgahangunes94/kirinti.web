@@ -40,6 +40,17 @@ export type CreateDiscoveryInput = {
   image_paths?: string[];
 };
 
+export type UpdateDiscoveryInput = {
+  city: string;
+  district: string;
+  village_or_area?: string | null;
+  stream_or_site_name?: string | null;
+  rock_type?: string | null;
+  field_notes: string;
+  latitude?: number | null;
+  longitude?: number | null;
+};
+
 export type GetDiscoveriesOptions = {
   limit?: number;
   onlyWithCoordinates?: boolean;
@@ -149,6 +160,36 @@ export async function createDiscovery(
   }
 
   return { ...data, images: [] };
+}
+
+export async function updateDiscovery(
+  supabase: SupabaseClient,
+  discoveryId: string,
+  input: UpdateDiscoveryInput,
+): Promise<Discovery> {
+  const { data, error } = await supabase
+    .from("discoveries")
+    .update({
+      city: input.city,
+      district: input.district,
+      village_or_area: input.village_or_area || null,
+      stream_or_site_name: input.stream_or_site_name || null,
+      rock_type: input.rock_type || null,
+      field_notes: input.field_notes,
+      latitude: input.latitude ?? null,
+      longitude: input.longitude ?? null,
+    })
+    .eq("id", discoveryId)
+    .select();
+
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error(
+      "Keşif kaydı güncellenemedi. Bu kaydın sahibi olmayabilirsin.",
+    );
+  }
+
+  return { ...data[0], images: [] };
 }
 
 export async function deleteDiscovery(

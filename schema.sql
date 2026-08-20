@@ -257,6 +257,11 @@ create policy "Kullanıcı kendi keşif kaydını oluşturur"
   on public.discoveries for insert
   with check (auth.uid() = user_id);
 
+create policy "Kullanıcı kendi keşif kaydını günceller"
+  on public.discoveries for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
 create policy "Kullanıcı kendi keşif kaydını siler"
   on public.discoveries for delete
   using (auth.uid() = user_id);
