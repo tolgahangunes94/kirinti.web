@@ -22,6 +22,8 @@ export type Discovery = {
   stream_or_site_name: string | null;
   rock_type: string | null;
   field_notes: string;
+  latitude: number | null;
+  longitude: number | null;
   created_at: string;
   images: DiscoveryImage[];
 };
@@ -33,7 +35,14 @@ export type CreateDiscoveryInput = {
   stream_or_site_name?: string | null;
   rock_type?: string | null;
   field_notes: string;
+  latitude?: number | null;
+  longitude?: number | null;
   image_paths?: string[];
+};
+
+export type GetDiscoveriesOptions = {
+  limit?: number;
+  onlyWithCoordinates?: boolean;
 };
 
 type DiscoveryRow = Omit<Discovery, "images"> & {
@@ -61,13 +70,21 @@ async function getSignedImageUrls(
 
 export async function getDiscoveries(
   supabase: SupabaseClient,
-  limit = 20,
+  options: GetDiscoveriesOptions = {},
 ): Promise<Discovery[]> {
-  const { data, error } = await supabase
+  const { limit = 20, onlyWithCoordinates = false } = options;
+
+  let query = supabase
     .from("discoveries")
     .select("*, discovery_images(id, image_path, position)")
     .order("created_at", { ascending: false })
     .limit(limit);
+
+  if (onlyWithCoordinates) {
+    query = query.not("latitude", "is", null).not("longitude", "is", null);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw error;
 
@@ -106,6 +123,8 @@ export async function createDiscovery(
       stream_or_site_name: input.stream_or_site_name || null,
       rock_type: input.rock_type || null,
       field_notes: input.field_notes,
+      latitude: input.latitude ?? null,
+      longitude: input.longitude ?? null,
     })
     .select()
     .single();

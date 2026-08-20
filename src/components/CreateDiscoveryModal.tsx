@@ -4,6 +4,9 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { createDiscovery } from "@/lib/supabase/discoveries";
 import DiscoveryImagesUpload from "@/components/DiscoveryImagesUpload";
+import DiscoveryLocationPicker, {
+  type DiscoveryPoint,
+} from "@/components/DiscoveryLocationPicker";
 
 type CreateDiscoveryModalProps = {
   open: boolean;
@@ -23,6 +26,7 @@ export default function CreateDiscoveryModal({
   const [rockType, setRockType] = useState("");
   const [fieldNotes, setFieldNotes] = useState("");
   const [imagePaths, setImagePaths] = useState<string[]>([]);
+  const [point, setPoint] = useState<DiscoveryPoint | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -42,6 +46,8 @@ export default function CreateDiscoveryModal({
         stream_or_site_name: streamOrSiteName.trim(),
         rock_type: rockType.trim(),
         field_notes: fieldNotes.trim(),
+        latitude: point?.latitude ?? null,
+        longitude: point?.longitude ?? null,
         image_paths: imagePaths,
       });
 
@@ -52,6 +58,7 @@ export default function CreateDiscoveryModal({
       setRockType("");
       setFieldNotes("");
       setImagePaths([]);
+      setPoint(null);
       onCreated?.();
       onClose();
     } catch (err) {
@@ -69,35 +76,43 @@ export default function CreateDiscoveryModal({
     <>
       <div className="fixed inset-0 z-[9998] bg-black/70" />
 
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto px-4 py-8">
-        <div className="relative w-full max-w-lg rounded-2xl border border-border bg-surface p-6 sm:p-8">
-          <button
-            type="button"
-            aria-label="Kapat"
-            onClick={onClose}
-            className="absolute right-4 top-4 text-muted transition-colors hover:text-foreground"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.6"
-              strokeLinecap="round"
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4 py-8">
+        <div className="relative flex max-h-[85vh] w-full max-w-lg flex-col rounded-2xl border border-border bg-surface">
+          <div className="flex items-start justify-between gap-4 border-b border-border p-6 sm:p-8 sm:pb-6">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight text-foreground">
+                Yeni Keşif Kaydı
+              </h2>
+              <p className="mt-1.5 text-sm font-medium text-accent">
+                Bu keşif yalnızca sana görünür.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              aria-label="Kapat"
+              onClick={onClose}
+              className="shrink-0 text-muted transition-colors hover:text-foreground"
             >
-              <path d="M5 5l10 10M15 5L5 15" />
-            </svg>
-          </button>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              >
+                <path d="M5 5l10 10M15 5L5 15" />
+              </svg>
+            </button>
+          </div>
 
-          <h2 className="text-xl font-semibold tracking-tight text-foreground">
-            Yeni Keşif Kaydı
-          </h2>
-          <p className="mt-1.5 text-sm font-medium text-accent">
-            Bu keşif yalnızca sana görünür.
-          </p>
-
-          <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
+          <form
+            id="create-discovery-form"
+            onSubmit={handleSubmit}
+            className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 py-6 sm:px-8"
+          >
             <div>
               <label htmlFor="city" className="text-xs font-medium text-muted">
                 İl *
@@ -214,16 +229,28 @@ export default function CreateDiscoveryModal({
               </div>
             </div>
 
-            {error && <p className="text-sm text-red-400">{error}</p>}
+            <div>
+              <label className="text-xs font-medium text-muted">
+                Harita Noktası (opsiyonel)
+              </label>
+              <div className="mt-1.5">
+                <DiscoveryLocationPicker onChange={setPoint} />
+              </div>
+            </div>
+          </form>
+
+          <div className="border-t border-border p-6 sm:p-8 sm:pt-6">
+            {error && <p className="mb-3 text-sm text-red-400">{error}</p>}
 
             <button
               type="submit"
+              form="create-discovery-form"
               disabled={loading}
-              className="mt-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong disabled:opacity-60"
+              className="w-full rounded-full bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong disabled:opacity-60"
             >
               {loading ? "Kaydediliyor..." : "Kaydet"}
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </>

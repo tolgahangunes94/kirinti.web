@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Map from "@/components/Map";
 import { createClient } from "@/lib/supabase/server";
 import { getGeologicalZones } from "@/lib/supabase/geological";
+import { getDiscoveries, type Discovery } from "@/lib/supabase/discoveries";
 import type { GeologicalZone } from "@/types/geological";
 
 async function loadZones(): Promise<GeologicalZone[]> {
@@ -13,8 +14,30 @@ async function loadZones(): Promise<GeologicalZone[]> {
   }
 }
 
+async function loadMyDiscoveries(): Promise<{
+  discoveries: Discovery[];
+  isAuthenticated: boolean;
+}> {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return { discoveries: [], isAuthenticated: false };
+
+    const discoveries = await getDiscoveries(supabase, {
+      onlyWithCoordinates: true,
+    });
+    return { discoveries, isAuthenticated: true };
+  } catch {
+    return { discoveries: [], isAuthenticated: false };
+  }
+}
+
 export default async function HaritaPage() {
-  const zones = await loadZones();
+  const [zones, { discoveries: myDiscoveries, isAuthenticated }] =
+    await Promise.all([loadZones(), loadMyDiscoveries()]);
 
   return (
     <>
@@ -29,7 +52,11 @@ export default async function HaritaPage() {
         </p>
 
         <div className="mt-8">
-          <Map zones={zones} />
+          <Map
+            zones={zones}
+            myDiscoveries={myDiscoveries}
+            isAuthenticated={isAuthenticated}
+          />
         </div>
       </main>
     </>

@@ -242,6 +242,8 @@ create table if not exists public.discoveries (
   stream_or_site_name text,
   rock_type text,
   field_notes text not null,
+  latitude double precision,
+  longitude double precision,
   created_at timestamptz not null default now()
 );
 
