@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { createDiscovery } from "@/lib/supabase/discoveries";
-import DiscoveryImageUpload from "@/components/DiscoveryImageUpload";
+import DiscoveryImagesUpload from "@/components/DiscoveryImagesUpload";
 
 type CreateDiscoveryModalProps = {
   open: boolean;
@@ -18,9 +18,11 @@ export default function CreateDiscoveryModal({
 }: CreateDiscoveryModalProps) {
   const [city, setCity] = useState("");
   const [district, setDistrict] = useState("");
+  const [villageOrArea, setVillageOrArea] = useState("");
+  const [streamOrSiteName, setStreamOrSiteName] = useState("");
   const [rockType, setRockType] = useState("");
-  const [mineralTrace, setMineralTrace] = useState("");
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [fieldNotes, setFieldNotes] = useState("");
+  const [imagePaths, setImagePaths] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,16 +38,20 @@ export default function CreateDiscoveryModal({
       await createDiscovery(supabase, {
         city: city.trim(),
         district: district.trim(),
+        village_or_area: villageOrArea.trim(),
+        stream_or_site_name: streamOrSiteName.trim(),
         rock_type: rockType.trim(),
-        mineral_trace: mineralTrace.trim(),
-        image_url: imageUrl,
+        field_notes: fieldNotes.trim(),
+        image_paths: imagePaths,
       });
 
       setCity("");
       setDistrict("");
+      setVillageOrArea("");
+      setStreamOrSiteName("");
       setRockType("");
-      setMineralTrace("");
-      setImageUrl(null);
+      setFieldNotes("");
+      setImagePaths([]);
       onCreated?.();
       onClose();
     } catch (err) {
@@ -87,16 +93,14 @@ export default function CreateDiscoveryModal({
           <h2 className="text-xl font-semibold tracking-tight text-foreground">
             Yeni Keşif Kaydı
           </h2>
-          <p className="mt-1.5 text-sm text-muted">
-            Saha kaydını il, ilçe ve gözlemlerinle birlikte ekle.
+          <p className="mt-1.5 text-sm font-medium text-accent">
+            Bu keşif yalnızca sana görünür.
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-            <DiscoveryImageUpload value={imageUrl} onChange={setImageUrl} />
-
             <div>
               <label htmlFor="city" className="text-xs font-medium text-muted">
-                İl
+                İl *
               </label>
               <input
                 id="city"
@@ -114,14 +118,49 @@ export default function CreateDiscoveryModal({
                 htmlFor="district"
                 className="text-xs font-medium text-muted"
               >
-                İlçe
+                İlçe *
               </label>
               <input
                 id="district"
                 type="text"
+                required
                 value={district}
                 onChange={(e) => setDistrict(e.target.value)}
                 placeholder="Örn: Nif"
+                className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="villageOrArea"
+                className="text-xs font-medium text-muted"
+              >
+                Köy / Mevki
+              </label>
+              <input
+                id="villageOrArea"
+                type="text"
+                value={villageOrArea}
+                onChange={(e) => setVillageOrArea(e.target.value)}
+                placeholder="Örn: Kaplan Köyü"
+                className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="streamOrSiteName"
+                className="text-xs font-medium text-muted"
+              >
+                Dere / Saha Adı
+              </label>
+              <input
+                id="streamOrSiteName"
+                type="text"
+                value={streamOrSiteName}
+                onChange={(e) => setStreamOrSiteName(e.target.value)}
+                placeholder="Örn: Kızılçay"
                 className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
               />
             </div>
@@ -145,19 +184,34 @@ export default function CreateDiscoveryModal({
 
             <div>
               <label
-                htmlFor="mineralTrace"
+                htmlFor="fieldNotes"
                 className="text-xs font-medium text-muted"
               >
-                Mineral İzi
+                Saha Notlarım *
               </label>
-              <input
-                id="mineralTrace"
-                type="text"
-                value={mineralTrace}
-                onChange={(e) => setMineralTrace(e.target.value)}
-                placeholder="Örn: Pirit izleri"
-                className="mt-1.5 w-full rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
+              <textarea
+                id="fieldNotes"
+                required
+                rows={4}
+                value={fieldNotes}
+                onChange={(e) => setFieldNotes(e.target.value)}
+                placeholder="Saha gözlemlerini anlat..."
+                className="mt-1.5 w-full resize-none rounded-lg border border-border bg-surface-2 px-3.5 py-2.5 text-sm text-foreground outline-none transition-colors focus:border-accent"
               />
+              <p className="mt-1.5 text-xs text-muted">
+                Derinlik, taban yapısı, siyah kum, bulduğun parçalar ve
+                sonraki deneyeceğin noktalar gibi saha detaylarını
+                kaydedebilirsin.
+              </p>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-muted">
+                Fotoğraflar
+              </label>
+              <div className="mt-1.5">
+                <DiscoveryImagesUpload onChange={setImagePaths} />
+              </div>
             </div>
 
             {error && <p className="text-sm text-red-400">{error}</p>}

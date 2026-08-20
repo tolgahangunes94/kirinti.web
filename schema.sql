@@ -231,24 +231,25 @@ for select
 to public
 using (true);
 
--- discoveries tablosu (Keşif Kayıtları)
+-- discoveries tablosu (Keşif Kayıtları — kişisel/gizli saha günlüğü, herkese açık DEĞİL)
 
 create table if not exists public.discoveries (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users (id) on delete cascade,
   city text not null,
-  district text,
+  district text not null,
+  village_or_area text,
+  stream_or_site_name text,
   rock_type text,
-  mineral_trace text,
-  image_url text,
+  field_notes text not null,
   created_at timestamptz not null default now()
 );
 
 alter table public.discoveries enable row level security;
 
-create policy "Keşif kayıtları herkese açık"
+create policy "Kullanıcı yalnızca kendi keşif kayıtlarını görür"
   on public.discoveries for select
-  using (true);
+  using (auth.uid() = user_id);
 
 create policy "Kullanıcı kendi keşif kaydını oluşturur"
   on public.discoveries for insert
@@ -281,12 +282,49 @@ create trigger on_discovery_deleted
   after delete on public.discoveries
   for each row execute procedure public.handle_discovery_count();
 
--- Storage: "discoveries" bucket politikaları
--- (bucket'ı public olarak Supabase Storage panelinden oluşturduktan sonra çalıştır)
+-- discovery_images tablosu (bir keşif kaydına ait en fazla 3 fotoğraf)
 
-create policy "discoveries bucket herkese açık okuma"
+create table if not exists public.discovery_images (
+  id uuid primary key default gen_random_uuid(),
+  discovery_id uuid not null references public.discoveries (id) on delete cascade,
+  user_id uuid not null references auth.users (id) on delete cascade,
+  image_path text not null,
+  position smallint not null default 0 check (position in (0, 1, 2)),
+  created_at timestamptz not null default now(),
+  unique (discovery_id, position)
+);
+
+alter table public.discovery_images enable row level security;
+
+create policy "Kullanıcı yalnızca kendi keşif görsellerini görür"
+  on public.discovery_images for select
+  using (auth.uid() = user_id);
+
+create policy "Kullanıcı kendi keşif görselini oluşturur"
+  on public.discovery_images for insert
+  with check (
+    auth.uid() = user_id
+    and exists (
+      select 1 from public.discoveries d
+      where d.id = discovery_id
+        and d.user_id = auth.uid()
+    )
+  );
+
+create policy "Kullanıcı kendi keşif görselini siler"
+  on public.discovery_images for delete
+  using (auth.uid() = user_id);
+
+-- Storage: "discoveries" bucket politikaları
+-- ÖNEMLİ: bucket PRIVATE olmalı ("Public bucket" KAPALI) — kayıtlar artık gizli.
+-- Supabase Storage panelinden bucket'ı private oluşturduktan/işaretledikten sonra çalıştır.
+
+create policy "discoveries bucket kullanıcı kendi görsellerini okur"
   on storage.objects for select
-  using (bucket_id = 'discoveries');
+  using (
+    bucket_id = 'discoveries'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
 
 create policy "discoveries bucket kullanıcı kendi klasörüne yükler"
   on storage.objects for insert

@@ -2,25 +2,62 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { createClient } from "./client";
 
 const DISCOVERIES_BUCKET = "discoveries";
+const SIGNED_URL_EXPIRES_IN = 3600;
+
+export const MAX_DISCOVERY_IMAGES = 3;
+
+export type DiscoveryImage = {
+  id: string;
+  image_path: string;
+  position: number;
+  url?: string;
+};
 
 export type Discovery = {
   id: string;
   user_id: string;
   city: string;
-  district: string | null;
+  district: string;
+  village_or_area: string | null;
+  stream_or_site_name: string | null;
   rock_type: string | null;
-  mineral_trace: string | null;
-  image_url: string | null;
+  field_notes: string;
   created_at: string;
+  images: DiscoveryImage[];
 };
 
 export type CreateDiscoveryInput = {
   city: string;
-  district?: string | null;
+  district: string;
+  village_or_area?: string | null;
+  stream_or_site_name?: string | null;
   rock_type?: string | null;
-  mineral_trace?: string | null;
-  image_url?: string | null;
+  field_notes: string;
+  image_paths?: string[];
 };
+
+type DiscoveryRow = Omit<Discovery, "images"> & {
+  discovery_images: Omit<DiscoveryImage, "url">[];
+};
+
+async function getSignedImageUrls(
+  supabase: SupabaseClient,
+  paths: string[],
+): Promise<Map<string, string>> {
+  if (paths.length === 0) return new Map();
+
+  const { data, error } = await supabase.storage
+    .from(DISCOVERIES_BUCKET)
+    .createSignedUrls(paths, SIGNED_URL_EXPIRES_IN);
+
+  if (error) throw error;
+
+  const map = new Map<string, string>();
+  for (const item of data ?? []) {
+    if (item.path && item.signedUrl) map.set(item.path, item.signedUrl);
+  }
+  return map;
+}
 
 export async function getDiscoveries(
   supabase: SupabaseClient,
@@ -28,12 +65,25 @@ export async function getDiscoveries(
 ): Promise<Discovery[]> {
   const { data, error } = await supabase
     .from("discoveries")
-    .select("*")
+    .select("*, discovery_images(id, image_path, position)")
     .order("created_at", { ascending: false })
     .limit(limit);
 
   if (error) throw error;
-  return data ?? [];
+
+  const rows = (data ?? []) as DiscoveryRow[];
+  const allPaths = rows.flatMap((row) =>
+    row.discovery_images.map((img) => img.image_path),
+  );
+  const signedUrls = await getSignedImageUrls(supabase, allPaths);
+
+  return rows.map(({ discovery_images, ...row }) => ({
+    ...row,
+    images: discovery_images
+      .slice()
+      .sort((a, b) => a.position - b.position)
+      .map((img) => ({ ...img, url: signedUrls.get(img.image_path) })),
+  }));
 }
 
 export async function createDiscovery(
@@ -51,22 +101,46 @@ export async function createDiscovery(
     .insert({
       user_id: user.id,
       city: input.city,
-      district: input.district || null,
+      district: input.district,
+      village_or_area: input.village_or_area || null,
+      stream_or_site_name: input.stream_or_site_name || null,
       rock_type: input.rock_type || null,
-      mineral_trace: input.mineral_trace || null,
-      image_url: input.image_url || null,
+      field_notes: input.field_notes,
     })
     .select()
     .single();
 
   if (error) throw error;
-  return data;
+
+  const imagePaths = (input.image_paths ?? []).slice(0, MAX_DISCOVERY_IMAGES);
+
+  if (imagePaths.length > 0) {
+    const { error: imagesError } = await supabase
+      .from("discovery_images")
+      .insert(
+        imagePaths.map((path, index) => ({
+          discovery_id: data.id,
+          user_id: user.id,
+          image_path: path,
+          position: index,
+        })),
+      );
+
+    if (imagesError) throw imagesError;
+  }
+
+  return { ...data, images: [] };
 }
 
 export async function deleteDiscovery(
   supabase: SupabaseClient,
   discoveryId: string,
 ): Promise<void> {
+  const { data: images } = await supabase
+    .from("discovery_images")
+    .select("image_path")
+    .eq("discovery_id", discoveryId);
+
   const { data, error } = await supabase
     .from("discoveries")
     .delete()
@@ -79,25 +153,21 @@ export async function deleteDiscovery(
       "Keşif kaydı silinemedi. Bu kaydın sahibi olmayabilirsin.",
     );
   }
-}
 
-export type UploadedDiscoveryImage = {
-  path: string;
-  url: string;
-};
-
-export function getDiscoveryImageUrl(path: string) {
-  const supabase = createClient();
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from(DISCOVERIES_BUCKET).getPublicUrl(path);
-  return publicUrl;
+  const paths = (images ?? []).map((img) => img.image_path);
+  if (paths.length > 0) {
+    try {
+      await supabase.storage.from(DISCOVERIES_BUCKET).remove(paths);
+    } catch {
+      // Kayıt zaten silindi; görseller silinemese de işlemi engelleme.
+    }
+  }
 }
 
 export async function uploadDiscoveryImage(
   file: File,
   userId: string,
-): Promise<UploadedDiscoveryImage> {
+): Promise<{ path: string }> {
   const supabase = createClient();
 
   const ext = file.name.split(".").pop() ?? "jpg";
@@ -111,22 +181,10 @@ export async function uploadDiscoveryImage(
     });
 
   if (error) throw error;
-
-  return { path, url: getDiscoveryImageUrl(path) };
+  return { path };
 }
 
-export async function deleteDiscoveryImage(
-  imageUrl: string | null,
-): Promise<void> {
-  if (!imageUrl) return;
-
-  const marker = `/storage/v1/object/public/${DISCOVERIES_BUCKET}/`;
-  const markerIndex = imageUrl.indexOf(marker);
-  if (markerIndex === -1) return;
-
-  const path = imageUrl.slice(markerIndex + marker.length);
-  if (!path) return;
-
+export async function deleteDiscoveryImageByPath(path: string): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase.storage
     .from(DISCOVERIES_BUCKET)

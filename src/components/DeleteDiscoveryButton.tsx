@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/supabase/AuthProvider";
 import { createClient } from "@/lib/supabase/client";
-import { deleteDiscovery, deleteDiscoveryImage } from "@/lib/supabase/discoveries";
+import { deleteDiscovery } from "@/lib/supabase/discoveries";
 
 function TrashIcon() {
   return (
@@ -25,13 +25,11 @@ function TrashIcon() {
 
 type DeleteDiscoveryButtonProps = {
   discoveryId: string;
-  imageUrl: string | null;
   ownerId: string;
 };
 
 export default function DeleteDiscoveryButton({
   discoveryId,
-  imageUrl,
   ownerId,
 }: DeleteDiscoveryButtonProps) {
   const { user } = useAuth();
@@ -51,13 +49,6 @@ export default function DeleteDiscoveryButton({
     try {
       const supabase = createClient();
       await deleteDiscovery(supabase, discoveryId);
-
-      try {
-        await deleteDiscoveryImage(imageUrl);
-      } catch {
-        // Kayıt zaten silindi; görsel silinemese de işlemi engelleme.
-      }
-
       router.refresh();
     } catch (err) {
       setError(

@@ -84,7 +84,7 @@ export default function Header() {
               className="inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent-strong sm:px-5"
             >
               {user && <PlusIcon />}
-              {user ? "Keşif Paylaş" : "Topluluğa Katıl"}
+              {user ? "Gönderi Paylaş" : "Topluluğa Katıl"}
             </button>
 
             {user && (
