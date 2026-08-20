@@ -192,6 +192,62 @@ export async function updateDiscovery(
   return { ...data[0], images: [] };
 }
 
+export async function addDiscoveryImage(
+  supabase: SupabaseClient,
+  discoveryId: string,
+  position: number,
+  imagePath: string,
+): Promise<DiscoveryImage> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Görsel eklemek için giriş yapmalısın.");
+
+  const { data, error } = await supabase
+    .from("discovery_images")
+    .insert({
+      discovery_id: discoveryId,
+      user_id: user.id,
+      image_path: imagePath,
+      position,
+    })
+    .select("id, image_path, position")
+    .single();
+
+  if (error) throw error;
+
+  const signedUrls = await getSignedImageUrls(supabase, [imagePath]);
+
+  return { ...data, url: signedUrls.get(imagePath) };
+}
+
+export async function deleteDiscoveryImage(
+  supabase: SupabaseClient,
+  imageId: string,
+): Promise<void> {
+  const { data, error } = await supabase
+    .from("discovery_images")
+    .delete()
+    .eq("id", imageId)
+    .select("image_path");
+
+  if (error) throw error;
+  if (!data || data.length === 0) {
+    throw new Error(
+      "Görsel silinemedi. Bu görselin sahibi olmayabilirsin.",
+    );
+  }
+
+  try {
+    await supabase.storage
+      .from(DISCOVERIES_BUCKET)
+      .remove([data[0].image_path]);
+  } catch {
+    // Görsel kaydı zaten silindi; storage dosyası silinemese de işlemi engelleme.
+  }
+}
+
 export async function deleteDiscovery(
   supabase: SupabaseClient,
   discoveryId: string,

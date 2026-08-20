@@ -6,7 +6,7 @@ import { updateDiscovery, type Discovery } from "@/lib/supabase/discoveries";
 import DiscoveryLocationPicker, {
   type DiscoveryPoint,
 } from "@/components/DiscoveryLocationPicker";
-import PostImage from "@/components/PostImage";
+import DiscoveryImagesManager from "@/components/DiscoveryImagesManager";
 
 type EditDiscoveryModalProps = {
   open: boolean;
@@ -223,28 +223,21 @@ export default function EditDiscoveryModal({
               </p>
             </div>
 
-            {discovery.images.length > 0 && (
-              <div>
-                <label className="text-xs font-medium text-muted">
-                  Fotoğraflar
-                </label>
-                <div className="mt-1.5 flex gap-2">
-                  {discovery.images.map(
-                    (image) =>
-                      image.url && (
-                        <PostImage
-                          key={image.id}
-                          imageUrl={image.url}
-                          alt={`${discovery.city} / ${discovery.district}`}
-                        />
-                      ),
-                  )}
-                </div>
-                <p className="mt-1.5 text-xs text-muted">
-                  Fotoğraflar bu ekrandan değiştirilemiyor.
-                </p>
+            <div>
+              <label className="text-xs font-medium text-muted">
+                Fotoğraflar
+              </label>
+              <div className="mt-1.5">
+                <DiscoveryImagesManager
+                  discoveryId={discovery.id}
+                  initialImages={discovery.images}
+                  onChange={onUpdated}
+                />
               </div>
-            )}
+              <p className="mt-1.5 text-xs text-muted">
+                Fotoğraf değişiklikleri anında kaydedilir.
+              </p>
+            </div>
 
             <div>
               <label className="text-xs font-medium text-muted">
