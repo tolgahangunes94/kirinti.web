@@ -230,3 +230,74 @@ on public.geological_zones
 for select
 to public
 using (true);
+
+-- discoveries tablosu (Keşif Kayıtları)
+
+create table if not exists public.discoveries (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users (id) on delete cascade,
+  city text not null,
+  district text,
+  rock_type text,
+  mineral_trace text,
+  image_url text,
+  created_at timestamptz not null default now()
+);
+
+alter table public.discoveries enable row level security;
+
+create policy "Keşif kayıtları herkese açık"
+  on public.discoveries for select
+  using (true);
+
+create policy "Kullanıcı kendi keşif kaydını oluşturur"
+  on public.discoveries for insert
+  with check (auth.uid() = user_id);
+
+create policy "Kullanıcı kendi keşif kaydını siler"
+  on public.discoveries for delete
+  using (auth.uid() = user_id);
+
+-- Yeni keşif kaydı eklenince/silinince profildeki discovery_count sayacını günceller
+create or replace function public.handle_discovery_count()
+returns trigger as $$
+begin
+  if (tg_op = 'INSERT') then
+    update public.profiles set discovery_count = discovery_count + 1 where id = new.user_id;
+    return new;
+  elsif (tg_op = 'DELETE') then
+    update public.profiles set discovery_count = greatest(discovery_count - 1, 0) where id = old.user_id;
+    return old;
+  end if;
+  return null;
+end;
+$$ language plpgsql security definer set search_path = public;
+
+create trigger on_discovery_created
+  after insert on public.discoveries
+  for each row execute procedure public.handle_discovery_count();
+
+create trigger on_discovery_deleted
+  after delete on public.discoveries
+  for each row execute procedure public.handle_discovery_count();
+
+-- Storage: "discoveries" bucket politikaları
+-- (bucket'ı public olarak Supabase Storage panelinden oluşturduktan sonra çalıştır)
+
+create policy "discoveries bucket herkese açık okuma"
+  on storage.objects for select
+  using (bucket_id = 'discoveries');
+
+create policy "discoveries bucket kullanıcı kendi klasörüne yükler"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'discoveries'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+create policy "discoveries bucket kullanıcı kendi dosyasını siler"
+  on storage.objects for delete
+  using (
+    bucket_id = 'discoveries'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
