@@ -47,8 +47,8 @@ export default async function HaritaPage() {
           Potansiyel Altın Haritası
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Jeolojik bölgeleri türe göre filtrele, bir noktaya tıklayarak
-          detaylarını gör.
+          Türkiye genelindeki kaynaklı jeolojik kayıtları incele, bölge ve
+          cevherleşme türüne göre filtrele.
         </p>
 
         <div className="mt-8">

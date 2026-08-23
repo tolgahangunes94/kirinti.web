@@ -4,23 +4,25 @@ export default function About() {
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 md:grid-cols-2 md:gap-16">
         <div>
           <h2 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
-            Küçük kırıntılar, <span className="text-accent">büyük birikim</span>
+            Sahadan gelen bilgi, doğru kaynakla{" "}
+            <span className="text-accent">değer kazanır</span>.
           </h2>
           <p className="mt-5 text-base leading-relaxed text-muted sm:text-lg">
-            Kırıntı Madencilik, saha tecrübesini ve dijital bilgiyi bir araya
-            getiren bağımsız bir topluluk girişimidir. Amacımız; madenlerde
-            çalışan, bu alanda yatırım yapan ya da sektöre yeni adım atan
-            herkesin doğru bilgiye kolayca ulaşabildiği, güvenilir ve şeffaf
-            bir platform oluşturmak.
+            KırıntıMadencilik.com; kaynağı belli jeolojik veriyi, kişisel
+            saha notlarını ve gerçek kullanıcı deneyimini aynı yerde
+            buluşturur. Platformun amacı, kırıntı madenciliği hobisine ilgi
+            duyanların araştırma yapabildiği, öğrendiklerini kayıt altına
+            alabildiği ve isterse toplulukla deneyim paylaşabildiği
+            güvenilir bir dijital merkez oluşturmaktır.
           </p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           {[
-            { title: "Şeffaflık", desc: "Doğrulanabilir ve açık bilgi paylaşımı" },
-            { title: "Deneyim", desc: "Sahadan gelen gerçek tecrübeler" },
-            { title: "Dayanışma", desc: "Birbirine destek olan bir ağ" },
-            { title: "Erişim", desc: "Herkes için ücretsiz üyelik" },
+            { title: "Kaynak", desc: "Jeolojik kayıtların dayanağını görebil." },
+            { title: "Gizlilik", desc: "Kişisel keşiflerini paylaşmak zorunda değilsin." },
+            { title: "Saha", desc: "Teoriyi gerçek saha deneyimiyle birleştir." },
+            { title: "Topluluk", desc: "Deneyimi paylaş, bilgiyi büyüt." },
           ].map((item) => (
             <div
               key={item.title}

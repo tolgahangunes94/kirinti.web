@@ -9,4 +9,7 @@ export type GeologicalZone = {
   latitude: number;
   longitude: number;
   created_at: string;
+  evidence_level: string | null;
+  source_name: string | null;
+  source_url: string | null;
 };

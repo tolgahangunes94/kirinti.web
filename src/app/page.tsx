@@ -2,6 +2,7 @@ import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import StatsBar from "@/components/StatsBar";
 import Features from "@/components/Features";
+import WhatIsKirintiMining from "@/components/WhatIsKirintiMining";
 import About from "@/components/About";
 import RecentPosts from "@/components/RecentPosts";
 import CommunityCta from "@/components/CommunityCta";
@@ -45,8 +46,9 @@ export default async function Home() {
         <Hero />
         <StatsBar />
         <Features />
-        <About />
+        <WhatIsKirintiMining />
         <RecentPosts posts={posts} />
+        <About />
         <CommunityCta />
       </main>
       <Footer />

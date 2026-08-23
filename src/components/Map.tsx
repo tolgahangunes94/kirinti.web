@@ -11,8 +11,8 @@ import type { GeologicalZone } from "@/types/geological";
 import type { Discovery } from "@/lib/supabase/discoveries";
 import PostImage from "@/components/PostImage";
 
-const IZMIR_CENTER: [number, number] = [38.42, 27.14];
-const DEFAULT_ZOOM = 9;
+const TURKEY_CENTER: [number, number] = [39.0, 35.2];
+const DEFAULT_ZOOM = 6;
 const MY_DISCOVERIES_FILTER = "my_discoveries" as const;
 
 type BaseLayer = "standard" | "satellite";
@@ -61,12 +61,14 @@ const ZONE_FILTERS: { label: string; value: ZoneFilter }[] = [
   { label: "Kuvars Damarları", value: "quartz_vein" },
   { label: "Jeotermal Hatlar", value: "geothermal" },
   { label: "Maden Sahaları", value: "mineral_deposit" },
+  { label: "Plaser / Alüvyon", value: "placer" },
 ];
 
 const ZONE_COLORS: Record<string, string> = {
   geothermal: "#f97316",
   quartz_vein: "#eab308",
   mineral_deposit: "#3b82f6",
+  placer: "#10b981",
 };
 
 const DEFAULT_ZONE_COLOR = "#9ca3af";
@@ -104,6 +106,11 @@ function CloseIcon() {
     </svg>
   );
 }
+
+const EVIDENCE_LEVEL_LABELS: Record<string, string> = {
+  documented: "Belgelenmiş",
+  regional_indicator: "Bölgesel Gösterge",
+};
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("tr-TR", {
@@ -146,6 +153,7 @@ export default function Map({
   const baseLayerRef = useRef<LeafletTileLayer | null>(null);
   const [baseLayer, setBaseLayer] = useState<BaseLayer>("standard");
   const [filter, setFilter] = useState<MapFilter>("all");
+  const [cityFilter, setCityFilter] = useState<string>("all");
   const [selectedZone, setSelectedZone] = useState<GeologicalZone | null>(
     null,
   );
@@ -157,15 +165,30 @@ export default function Map({
     ? [...ZONE_FILTERS, { label: "🔒 Benim Keşiflerim", value: MY_DISCOVERIES_FILTER }]
     : ZONE_FILTERS;
 
-  const filteredZones = useMemo(
+  const cityOptions = useMemo(
     () =>
+      Array.from(
+        new Set(
+          zones
+            .map((zone) => zone.city)
+            .filter((city): city is string => Boolean(city)),
+        ),
+      ).sort((a, b) => a.localeCompare(b, "tr")),
+    [zones],
+  );
+
+  const filteredZones = useMemo(() => {
+    const byCategory =
       filter === "all"
         ? zones
         : filter === MY_DISCOVERIES_FILTER
           ? []
-          : zones.filter((zone) => zone.zone_type === filter),
-    [zones, filter],
-  );
+          : zones.filter((zone) => zone.zone_type === filter);
+
+    return cityFilter === "all"
+      ? byCategory
+      : byCategory.filter((zone) => zone.city === cityFilter);
+  }, [zones, filter, cityFilter]);
 
   useEffect(() => {
     let cancelled = false;
@@ -175,7 +198,7 @@ export default function Map({
       if (cancelled || !mapContainerRef.current || mapRef.current) return;
 
       const map = L.map(mapContainerRef.current).setView(
-        IZMIR_CENTER,
+        TURKEY_CENTER,
         DEFAULT_ZOOM,
       );
 
@@ -297,6 +320,31 @@ export default function Map({
         })}
       </div>
 
+      <div className="mt-2 flex items-center gap-2">
+        <label
+          htmlFor="zone-city-filter"
+          className="text-xs font-medium text-muted"
+        >
+          İl
+        </label>
+        <select
+          id="zone-city-filter"
+          value={cityFilter}
+          onChange={(event) => {
+            setCityFilter(event.target.value);
+            setSelectedZone(null);
+          }}
+          className="rounded-lg border border-border bg-surface-2 px-2.5 py-1.5 text-xs text-foreground"
+        >
+          <option value="all">Tüm İller</option>
+          {cityOptions.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {filter === MY_DISCOVERIES_FILTER && (
         <div className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent">
           <LockIcon />
@@ -369,6 +417,13 @@ export default function Map({
                 style={{ background: ZONE_COLORS.mineral_deposit }}
               />
               <span className="text-foreground">Maden Sahaları</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span
+                className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ background: ZONE_COLORS.placer }}
+              />
+              <span className="text-foreground">Plaser / Alüvyon</span>
             </div>
           </div>
         </div>
@@ -498,6 +553,40 @@ export default function Map({
               <p className="mt-3 text-sm leading-relaxed text-foreground">
                 {selectedZone.description}
               </p>
+            )}
+
+            {(selectedZone.evidence_level || selectedZone.source_name) && (
+              <div className="mt-3 space-y-1.5 border-t border-border pt-3 text-xs">
+                {selectedZone.evidence_level && (
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="shrink-0 text-muted">Kanıt düzeyi</span>
+                    <span className="text-right font-medium text-foreground">
+                      {EVIDENCE_LEVEL_LABELS[selectedZone.evidence_level] ??
+                        selectedZone.evidence_level}
+                    </span>
+                  </div>
+                )}
+
+                {selectedZone.source_name && (
+                  <div className="flex items-start justify-between gap-3">
+                    <span className="shrink-0 text-muted">Kaynak</span>
+                    <span className="text-right font-medium text-foreground">
+                      {selectedZone.source_name}
+                    </span>
+                  </div>
+                )}
+
+                {selectedZone.source_url && (
+                  <a
+                    href={selectedZone.source_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-block font-medium text-accent hover:underline"
+                  >
+                    Kaynağı Gör →
+                  </a>
+                )}
+              </div>
             )}
           </div>
         )}
