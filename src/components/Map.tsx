@@ -166,6 +166,7 @@ export default function Map({
 }: MapProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
+  const resizeObserverRef = useRef<ResizeObserver | null>(null);
   const markersRef = useRef<LeafletMarker[]>([]);
   const baseLayerRef = useRef<LeafletTileLayer | null>(null);
   const baseLayerControlRef = useRef<LeafletControl | null>(null);
@@ -283,25 +284,42 @@ export default function Map({
       control.addTo(map);
       baseLayerControlRef.current = control;
 
-      // On mobile the container can settle to its final size a frame after
-      // mount, so Leaflet's initial size measurement (and therefore the
-      // center above) can be stale. Re-measure once layout is stable and
-      // recenter using a Turkey-wide bounds fit on narrow viewports.
-      requestAnimationFrame(() => {
-        if (cancelled || !mapRef.current) return;
+      // On mobile the container can take more than one animation frame to
+      // settle to its final on-screen size after mount (font/layout reflow,
+      // browser chrome). fitBounds computes its zoom from whatever size it
+      // measures at call time, so fitting against a stale/too-small size
+      // leaves the view zoomed far out once the container reaches its real
+      // size (Turkey ends up tiny, with Ukraine/Egypt/Saudi Arabia in
+      // frame). Watch the container itself and fit once it reports a real,
+      // non-zero size, then stop watching so later resizes (address bar
+      // show/hide, orientation change) don't override the user's own
+      // pan/zoom.
+      let fitted = false;
+      const resizeObserver = new ResizeObserver((entries) => {
+        if (fitted || cancelled || !mapRef.current) return;
+        const entry = entries[0];
+        if (!entry || entry.contentRect.width === 0 || entry.contentRect.height === 0) {
+          return;
+        }
+        fitted = true;
         mapRef.current.invalidateSize();
         if (window.innerWidth < MOBILE_BREAKPOINT) {
           mapRef.current.fitBounds(TURKEY_BOUNDS, { padding: [20, 20] });
         } else {
           mapRef.current.setView(TURKEY_CENTER, DEFAULT_ZOOM);
         }
+        resizeObserver.disconnect();
       });
+      resizeObserver.observe(mapContainerRef.current);
+      resizeObserverRef.current = resizeObserver;
     }
 
     initMap();
 
     return () => {
       cancelled = true;
+      resizeObserverRef.current?.disconnect();
+      resizeObserverRef.current = null;
       baseLayerControlRef.current?.remove();
       baseLayerControlRef.current = null;
       mapRef.current?.remove();
