@@ -492,41 +492,41 @@ export default function Map({
       <div className="relative mt-4 aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border shadow-2xl shadow-black/30 md:aspect-auto md:h-[600px]">
         <div ref={mapContainerRef} className="h-full w-full" />
 
-        <div className="absolute bottom-4 left-4 z-[900] rounded-xl border border-border bg-surface/95 px-3.5 py-3 text-[11px] shadow-lg backdrop-blur-sm">
-          <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted">
-            Lejant
+        <div className="absolute bottom-4 left-4 z-[900] rounded-xl border border-border bg-surface/95 px-2.5 py-2 text-[10px] shadow-lg backdrop-blur-sm md:px-3.5 md:py-3 md:text-[11px]">
+          <p className="mb-1.5 text-[8px] font-semibold uppercase tracking-wide text-muted md:mb-2 md:text-[10px]">
+            RENKLERİN ANLAMI
           </p>
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1 md:gap-1.5">
             {isAuthenticated && (
-              <div className="flex items-center gap-2">
-                <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-[3px] bg-accent" />
+              <div className="flex items-center gap-1.5 md:gap-2">
+                <span className="inline-block h-2 w-2 shrink-0 rounded-[3px] bg-accent md:h-2.5 md:w-2.5" />
                 <span className="text-foreground">🔒 Benim Keşiflerim</span>
               </div>
             )}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <span
-                className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                className="inline-block h-2 w-2 shrink-0 rounded-full md:h-2.5 md:w-2.5"
                 style={{ background: ZONE_COLORS.quartz_vein }}
               />
               <span className="text-foreground">Kuvars Damarları</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <span
-                className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                className="inline-block h-2 w-2 shrink-0 rounded-full md:h-2.5 md:w-2.5"
                 style={{ background: ZONE_COLORS.geothermal }}
               />
               <span className="text-foreground">Jeotermal Hatlar</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <span
-                className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                className="inline-block h-2 w-2 shrink-0 rounded-full md:h-2.5 md:w-2.5"
                 style={{ background: ZONE_COLORS.mineral_deposit }}
               />
               <span className="text-foreground">Maden Sahaları</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 md:gap-2">
               <span
-                className="inline-block h-2.5 w-2.5 shrink-0 rounded-full"
+                className="inline-block h-2 w-2 shrink-0 rounded-full md:h-2.5 md:w-2.5"
                 style={{ background: ZONE_COLORS.placer }}
               />
               <span className="text-foreground">Plaser / Alüvyon</span>
