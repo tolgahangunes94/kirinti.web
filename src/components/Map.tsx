@@ -489,7 +489,7 @@ export default function Map({
         </div>
       )}
 
-      <div className="relative mt-4 h-[600px] w-full overflow-hidden rounded-2xl border border-border shadow-2xl shadow-black/30">
+      <div className="relative mt-4 aspect-[4/3] w-full overflow-hidden rounded-2xl border border-border shadow-2xl shadow-black/30 md:aspect-auto md:h-[600px]">
         <div ref={mapContainerRef} className="h-full w-full" />
 
         <div className="absolute bottom-4 left-4 z-[900] rounded-xl border border-border bg-surface/95 px-3.5 py-3 text-[11px] shadow-lg backdrop-blur-sm">
