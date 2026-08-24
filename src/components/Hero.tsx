@@ -55,7 +55,7 @@ export default function Hero() {
         {/* Sağ Kolon: Türkiye Potansiyel Altın Haritası vitrini */}
         <Link
           href="/harita"
-          className="group flex aspect-[4/5] flex-col overflow-hidden rounded-3xl border border-border bg-surface transition-colors hover:border-accent/40 sm:aspect-[16/11] lg:aspect-auto lg:h-[560px]"
+          className="group flex aspect-[4/3] flex-col overflow-hidden rounded-3xl border border-border bg-surface transition-colors hover:border-accent/40 sm:aspect-[16/11] lg:aspect-auto lg:h-[560px]"
         >
           <div className="flex items-center justify-between gap-3 px-6 pb-3 pt-5 sm:px-8 sm:pt-6">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-foreground">
@@ -66,13 +66,13 @@ export default function Hero() {
             </span>
           </div>
 
-          <div className="relative mx-4 mb-4 flex-1 overflow-hidden rounded-2xl border border-border bg-surface-2 sm:mx-6 sm:mb-6">
+          <div className="relative mx-4 mb-4 flex-1 overflow-hidden rounded-2xl border border-border bg-[#080b0f] p-1 sm:mx-6 sm:mb-6 sm:p-2">
             <Image
-              src="/images/turkiye-altin-haritasi-preview.png"
+              src="/images/turkiye-altin-haritasi-preview-v3.png"
               alt="Türkiye potansiyel altın haritası önizlemesi, renkli jeolojik kayıt noktalarıyla"
               fill
               sizes="(min-width: 1024px) 45vw, 100vw"
-              className="object-cover object-center"
+              className="object-contain object-center"
             />
           </div>
         </Link>

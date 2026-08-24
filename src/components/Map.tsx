@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type {
+  Control as LeafletControl,
   Map as LeafletMap,
   Marker as LeafletMarker,
   TileLayer as LeafletTileLayer,
@@ -13,6 +14,11 @@ import PostImage from "@/components/PostImage";
 
 const TURKEY_CENTER: [number, number] = [39.0, 35.2];
 const DEFAULT_ZOOM = 6;
+const TURKEY_BOUNDS: [[number, number], [number, number]] = [
+  [35.7, 25.5],
+  [42.2, 45.0],
+];
+const MOBILE_BREAKPOINT = 768;
 const MY_DISCOVERIES_FILTER = "my_discoveries" as const;
 
 type BaseLayer = "standard" | "satellite";
@@ -51,6 +57,17 @@ function addBaseLayer(
   return L.tileLayer(STANDARD_TILE_URL, {
     attribution: STANDARD_ATTRIBUTION,
   }).addTo(map);
+}
+
+function getBaseLayerButtonClassName(isActive: boolean, isDisabled: boolean) {
+  const base =
+    "pointer-events-auto min-h-[44px] min-w-[44px] touch-manipulation rounded-lg px-2.5 py-1 text-[11px] font-medium transition-colors sm:min-h-0 sm:min-w-0";
+  const state = isActive
+    ? "bg-accent text-accent-foreground"
+    : isDisabled
+      ? "cursor-not-allowed text-muted/40"
+      : "text-muted hover:text-foreground";
+  return `${base} ${state}`;
 }
 
 type ZoneFilter = "all" | GeologicalZone["zone_type"];
@@ -151,6 +168,10 @@ export default function Map({
   const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<LeafletMarker[]>([]);
   const baseLayerRef = useRef<LeafletTileLayer | null>(null);
+  const baseLayerControlRef = useRef<LeafletControl | null>(null);
+  const baseLayerButtonsRef = useRef<Partial<Record<BaseLayer, HTMLButtonElement>>>(
+    {},
+  );
   const [baseLayer, setBaseLayer] = useState<BaseLayer>("standard");
   const [filter, setFilter] = useState<MapFilter>("all");
   const [cityFilter, setCityFilter] = useState<string>("all");
@@ -204,16 +225,98 @@ export default function Map({
 
       baseLayerRef.current = addBaseLayer(L, map, "standard");
       mapRef.current = map;
+
+      // Standart/Uydu toggle is a real Leaflet control (not a React overlay)
+      // so it lives inside Leaflet's own control DOM and gets the same
+      // touch/click handling Leaflet gives its built-in controls — this is
+      // what makes it reliable on mobile, where a plain absolutely-positioned
+      // React element on top of the map was not registering taps.
+      const BaseLayerControl = L.Control.extend({
+        onAdd: function onAdd() {
+          const container = L.DomUtil.create(
+            "div",
+            "flex items-center gap-1 rounded-xl border border-border bg-surface/95 p-1 shadow-lg backdrop-blur-sm",
+          );
+
+          L.DomEvent.disableClickPropagation(container);
+          L.DomEvent.disableScrollPropagation(container);
+          L.DomEvent.on(container, "mousedown", L.DomEvent.stopPropagation);
+          L.DomEvent.on(container, "touchstart", L.DomEvent.stopPropagation);
+          L.DomEvent.on(container, "pointerdown", L.DomEvent.stopPropagation);
+          L.DomEvent.on(container, "dblclick", L.DomEvent.stopPropagation);
+
+          BASE_LAYER_OPTIONS.forEach((option) => {
+            const isDisabled =
+              option.value === "satellite" && !SATELLITE_AVAILABLE;
+
+            const button = L.DomUtil.create(
+              "button",
+              getBaseLayerButtonClassName(
+                option.value === "standard",
+                isDisabled,
+              ),
+              container,
+            ) as HTMLButtonElement;
+            button.type = "button";
+            button.textContent = option.label;
+            button.disabled = isDisabled;
+            if (isDisabled) {
+              button.title = "Uydu görünümü için MapTiler API anahtarı gerekli";
+            }
+
+            L.DomEvent.on(button, "click", (event) => {
+              L.DomEvent.stop(event);
+              if (!button.disabled) setBaseLayer(option.value);
+            });
+
+            baseLayerButtonsRef.current[option.value] = button;
+          });
+
+          return container;
+        },
+        onRemove: function onRemove() {
+          baseLayerButtonsRef.current = {};
+        },
+      });
+
+      const control = new BaseLayerControl({ position: "topright" });
+      control.addTo(map);
+      baseLayerControlRef.current = control;
+
+      // On mobile the container can settle to its final size a frame after
+      // mount, so Leaflet's initial size measurement (and therefore the
+      // center above) can be stale. Re-measure once layout is stable and
+      // recenter using a Turkey-wide bounds fit on narrow viewports.
+      requestAnimationFrame(() => {
+        if (cancelled || !mapRef.current) return;
+        mapRef.current.invalidateSize();
+        if (window.innerWidth < MOBILE_BREAKPOINT) {
+          mapRef.current.fitBounds(TURKEY_BOUNDS, { padding: [20, 20] });
+        } else {
+          mapRef.current.setView(TURKEY_CENTER, DEFAULT_ZOOM);
+        }
+      });
     }
 
     initMap();
 
     return () => {
       cancelled = true;
+      baseLayerControlRef.current?.remove();
+      baseLayerControlRef.current = null;
       mapRef.current?.remove();
       mapRef.current = null;
       baseLayerRef.current = null;
     };
+  }, []);
+
+  useEffect(() => {
+    function handleResize() {
+      mapRef.current?.invalidateSize();
+    }
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
@@ -231,6 +334,22 @@ export default function Map({
     }
 
     syncBaseLayer();
+  }, [baseLayer]);
+
+  // Keeps the Leaflet control's button styling (imperative DOM, outside
+  // React's tree) in sync with the baseLayer state, e.g. right after the
+  // user taps "Uydu".
+  useEffect(() => {
+    BASE_LAYER_OPTIONS.forEach((option) => {
+      const button = baseLayerButtonsRef.current[option.value];
+      if (!button) return;
+      const isDisabled =
+        option.value === "satellite" && !SATELLITE_AVAILABLE;
+      button.className = getBaseLayerButtonClassName(
+        baseLayer === option.value,
+        isDisabled,
+      );
+    });
   }, [baseLayer]);
 
   useEffect(() => {
@@ -354,37 +473,6 @@ export default function Map({
 
       <div className="relative mt-4 h-[600px] w-full overflow-hidden rounded-2xl border border-border shadow-2xl shadow-black/30">
         <div ref={mapContainerRef} className="h-full w-full" />
-
-        <div className="absolute right-3 top-3 z-[900] flex items-center gap-1 rounded-xl border border-border bg-surface/95 p-1 shadow-lg backdrop-blur-sm">
-          {BASE_LAYER_OPTIONS.map((option) => {
-            const isActive = baseLayer === option.value;
-            const isDisabled =
-              option.value === "satellite" && !SATELLITE_AVAILABLE;
-
-            return (
-              <button
-                key={option.value}
-                type="button"
-                disabled={isDisabled}
-                title={
-                  isDisabled
-                    ? "Uydu görünümü için MapTiler API anahtarı gerekli"
-                    : undefined
-                }
-                onClick={() => setBaseLayer(option.value)}
-                className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition-colors ${
-                  isActive
-                    ? "bg-accent text-accent-foreground"
-                    : isDisabled
-                      ? "cursor-not-allowed text-muted/40"
-                      : "text-muted hover:text-foreground"
-                }`}
-              >
-                {option.label}
-              </button>
-            );
-          })}
-        </div>
 
         <div className="absolute bottom-4 left-4 z-[900] rounded-xl border border-border bg-surface/95 px-3.5 py-3 text-[11px] shadow-lg backdrop-blur-sm">
           <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-muted">
