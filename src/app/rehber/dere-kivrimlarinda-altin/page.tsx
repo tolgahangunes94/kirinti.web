@@ -58,7 +58,7 @@ export default function DereKivrimlarindaAltinPage() {
           adım anlatıyor.
         </p>
 
-        <div className="bg-glow relative mt-8 aspect-video w-full overflow-hidden rounded-2xl bg-surface-2">
+        <div className="relative mt-8 aspect-video w-full overflow-hidden">
           <Image
             src="/images/rehber/dere-kivrimlarinda-altin-hero.png"
             alt="Bir dere yatağının iç virajında akıntının yavaşlayıp ağır mineralleri biriktirdiği bölgeyi gösteren şematik görsel"
