@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import CreateDiscoveryButton from "@/components/CreateDiscoveryButton";
 import DiscoveryList from "@/components/DiscoveryList";
 import { createClient } from "@/lib/supabase/server";
 import { getDiscoveries, type Discovery } from "@/lib/supabase/discoveries";
+
+export const metadata: Metadata = {
+  title: "Keşiflerim",
+  description: "Kişisel saha günlüğün — yalnızca sana görünür.",
+  robots: { index: false, follow: false },
+};
 
 function LockIcon() {
   return (

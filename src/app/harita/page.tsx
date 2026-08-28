@@ -1,9 +1,16 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Map from "@/components/Map";
 import { createClient } from "@/lib/supabase/server";
 import { getGeologicalZones } from "@/lib/supabase/geological";
 import { getDiscoveries, type Discovery } from "@/lib/supabase/discoveries";
 import type { GeologicalZone } from "@/types/geological";
+
+export const metadata: Metadata = {
+  title: "Türkiye Altın ve Jeoloji Haritası",
+  description:
+    "Kuvars damarları, jeotermal hatlar, maden sahaları ve plaser altın bölgeleri — MTA kaynaklı, kanıt düzeyi etiketli interaktif Türkiye haritası.",
+};
 
 async function loadZones(): Promise<GeologicalZone[]> {
   try {

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import PostCard from "@/components/PostCard";
@@ -6,6 +7,11 @@ import { createClient } from "@/lib/supabase/server";
 import { getPostsByUserId } from "@/lib/supabase/posts";
 import { getLikedPostIds } from "@/lib/supabase/likes";
 import type { Profile } from "@/lib/supabase/AuthProvider";
+
+export const metadata: Metadata = {
+  title: "Profilim",
+  robots: { index: false, follow: false },
+};
 
 export default async function ProfilePage() {
   const supabase = await createClient();

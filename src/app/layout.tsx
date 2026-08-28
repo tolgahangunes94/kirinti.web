@@ -14,19 +14,41 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const SITE_TITLE = "Kırıntı Madencilik | KırıntıMadencilik.com";
+const SITE_DESCRIPTION =
+  "Kırıntı madencilik meraklıları için Türkiye'nin saha ve jeoloji platformu — kaynaklı veriyi incele, saha notlarını gizlice kaydet, deneyimini paylaş.";
+const SITE_OG_IMAGE = "/images/turkiye-altin-haritasi-preview-v3.png";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://kirintimadencilik.com"),
-  title: "Kırıntı Madencilik",
-  description:
-    "Kırıntı Madencilik — madenciler için modern topluluk platformu. Bilgi paylaş, deneyimlerini anlat, birlikte büyü.",
+  title: {
+    default: SITE_TITLE,
+    template: "%s | KırıntıMadencilik.com",
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "kırıntı madencilik",
+    "derede altın arama",
+    "altın arama Türkiye",
+    "plaser altın",
+    "kuvars damarı",
+    "jeoloji haritası",
+    "fossicking",
+  ],
   openGraph: {
-    title: "Kırıntı Madencilik",
-    description:
-      "Madenciler için modern topluluk platformu. Bilgi paylaş, deneyimlerini anlat, birlikte büyü.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     url: "https://kirintimadencilik.com",
-    siteName: "Kırıntı Madencilik",
+    siteName: "KırıntıMadencilik.com",
     locale: "tr_TR",
     type: "website",
+    images: [{ url: SITE_OG_IMAGE, width: 1103, height: 606 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    images: [SITE_OG_IMAGE],
   },
 };
 

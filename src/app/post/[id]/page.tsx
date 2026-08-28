@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import PostDetail from "@/components/PostDetail";
@@ -11,6 +12,38 @@ import { getLikedPostIds } from "@/lib/supabase/likes";
 type PostPageProps = {
   params: Promise<{ id: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: PostPageProps): Promise<Metadata> {
+  const { id } = await params;
+  const supabase = await createClient();
+  const post = await getPostById(supabase, id);
+  if (!post) return {};
+
+  const title = post.location ? `${post.location} — Saha Paylaşımı` : "Saha Paylaşımı";
+  const description =
+    post.description.length > 160
+      ? `${post.description.slice(0, 157)}...`
+      : post.description;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: post.image_url ? [post.image_url] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: post.image_url ? [post.image_url] : undefined,
+    },
+  };
+}
 
 export default async function PostPage({ params }: PostPageProps) {
   const { id } = await params;

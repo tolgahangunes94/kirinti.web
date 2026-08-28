@@ -1,7 +1,13 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import LoginForm from "@/components/auth/LoginForm";
 import { createClient } from "@/lib/supabase/server";
+
+export const metadata: Metadata = {
+  title: "Giriş Yap",
+  robots: { index: false, follow: false },
+};
 
 export default async function LoginPage() {
   const supabase = await createClient();

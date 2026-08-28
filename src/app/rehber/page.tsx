@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import GuideBoard from "@/components/GuideBoard";
+
+export const metadata: Metadata = {
+  title: "Saha Rehberi — Derede ve Kuvarsta Altın Arama Teknikleri",
+  description:
+    "Jeolojiden dere okumaya, kuvars damarı belirlemeden doğru panlama tekniğine kadar sahada işine yarayacak temel bilgiler.",
+};
 
 export default function RehberPage() {
   return (
