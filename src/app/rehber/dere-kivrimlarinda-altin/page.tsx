@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
 
@@ -12,7 +13,7 @@ function BackToGuideLink() {
   return (
     <Link
       href="/rehber"
-      className="inline-flex items-center gap-1.5 text-sm font-medium text-accent transition-colors hover:text-accent-strong"
+      className="-my-2 inline-flex items-center gap-1.5 py-2 text-sm font-medium text-accent transition-colors hover:text-accent-strong"
     >
       <svg
         width="16"
@@ -23,6 +24,7 @@ function BackToGuideLink() {
         strokeWidth="1.6"
         strokeLinecap="round"
         strokeLinejoin="round"
+        aria-hidden="true"
       >
         <path d="M12 4 6 10l6 6" />
       </svg>
@@ -35,7 +37,7 @@ export default function DereKivrimlarindaAltinPage() {
   return (
     <>
       <Header />
-      <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-10 sm:px-8 sm:py-16">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10 sm:px-8 sm:py-16">
         <BackToGuideLink />
 
         <span className="mt-6 inline-flex items-center rounded-full bg-accent/10 px-2.5 py-1 text-[11px] font-medium text-accent">
@@ -56,24 +58,19 @@ export default function DereKivrimlarindaAltinPage() {
           adım anlatıyor.
         </p>
 
-        <div className="bg-glow mt-8 flex aspect-video w-full items-center justify-center overflow-hidden rounded-xl border border-border bg-surface-2 text-accent/70">
-          <svg
-            width="40"
-            height="40"
-            viewBox="0 0 20 20"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          >
-            <path d="M3 4c0 4 8 2 8 7s6 3 6 5" />
-            <circle cx="15" cy="5" r="1.4" />
-          </svg>
+        <div className="bg-glow relative mt-8 aspect-video w-full overflow-hidden rounded-2xl bg-surface-2">
+          <Image
+            src="/images/rehber/dere-kivrimlarinda-altin-hero.png"
+            alt="Bir dere yatağının iç virajında akıntının yavaşlayıp ağır mineralleri biriktirdiği bölgeyi gösteren şematik görsel"
+            fill
+            className="object-contain"
+            sizes="(min-width: 672px) 672px, 100vw"
+            priority
+          />
         </div>
 
         <section>
-          <h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="mt-10 text-balance text-xl font-semibold tracking-tight text-foreground">
             Neden Burada Birikir?
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-foreground">
@@ -99,40 +96,40 @@ export default function DereKivrimlarindaAltinPage() {
         </section>
 
         <section>
-          <h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">
+          <h2 className="mt-10 text-balance text-xl font-semibold tracking-tight text-foreground">
             Sahada Neye Bakılır?
           </h2>
           <ul className="mt-3 flex flex-col gap-2.5 text-sm leading-relaxed text-foreground">
             <li className="flex gap-2.5">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" />
               Kıvrımın iç tarafında, akıntının görünür şekilde yavaşladığı
               geniş ve sığ kesim.
             </li>
             <li className="flex gap-2.5">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" />
               Çakıl birikintisinin diğer noktalara göre gözle görülür şekilde
               kalınlaştığı yer — genelde virajın çıkışına yakın.
             </li>
             <li className="flex gap-2.5">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" />
               Yüzeydeki en iri, en ağır taşların toplandığı &quot;yüksek su
               izi&quot; çizgisi; bu çizginin hemen altı öncelikli bir
               noktadır.
             </li>
             <li className="flex gap-2.5">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" />
               Virajın hemen arkasında kalan, girdaba yakın sakin cepler.
             </li>
             <li className="flex gap-2.5">
-              <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+              <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" />
               Varsa yüzeye çıkan taban kayası parçaları — iç virajda taban
               kayasına erişmek dış virajdan çoğu zaman daha kolaydır.
             </li>
           </ul>
         </section>
 
-        <section>
-          <h2 className="mt-10 text-xl font-semibold tracking-tight text-foreground">
+        <section className="mt-10 rounded-2xl border border-border bg-surface p-6">
+          <h2 className="text-balance text-xl font-semibold tracking-tight text-foreground">
             Numune Nasıl Alınır?
           </h2>
           <ol className="mt-3 flex flex-col gap-3 text-sm leading-relaxed text-foreground">
