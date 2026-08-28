@@ -8,6 +8,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: BASE_URL, changeFrequency: "daily", priority: 1 },
     { url: `${BASE_URL}/harita`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/rehber`, changeFrequency: "monthly", priority: 0.8 },
+    {
+      url: `${BASE_URL}/rehber/dere-kivrimlarinda-altin`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 
   let postRoutes: MetadataRoute.Sitemap = [];

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 type Category = "all" | "geology" | "stream" | "technique";
 
@@ -24,6 +25,7 @@ type GuideItem = {
   summary: string;
   detail: string;
   icon: React.ReactNode;
+  href?: string;
 };
 
 const GUIDE_ITEMS: GuideItem[] = [
@@ -75,6 +77,7 @@ const GUIDE_ITEMS: GuideItem[] = [
     detail:
       "Bir derenin döndüğü her virajda dış tarafta su hızlanıp erozyon yaparken, iç tarafta su yavaşlar ve enerjisini kaybeder. Bu düşük enerjili bölge, taşınan ağır partiküllerin (altın dahil) çökelmesi için ideal bir ortam oluşturur. Özellikle virajın çıkışına yakın, çakıl birikintisinin kalınlaştığı noktalar öncelikli örnekleme alanlarıdır.",
     icon: <path d="M3 4c0 4 8 2 8 7s6 3 6 5" />,
+    href: "/rehber/dere-kivrimlarinda-altin",
   },
   {
     id: "taban-kayasi",
@@ -219,6 +222,27 @@ export default function GuideBoard() {
                 <p className="mt-3 border-t border-border pt-3 text-sm leading-relaxed text-foreground">
                   {item.detail}
                 </p>
+              )}
+
+              {item.href && (
+                <Link
+                  href={item.href}
+                  className="mt-3 flex items-center gap-1.5 text-xs font-medium text-accent transition-colors hover:text-accent-strong"
+                >
+                  Devamını oku
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M7 4l6 6-6 6" />
+                  </svg>
+                </Link>
               )}
             </div>
           );
