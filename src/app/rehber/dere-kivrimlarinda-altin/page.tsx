@@ -3,10 +3,25 @@ import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
 
+const PAGE_TITLE = "Dere Kıvrımlarında Altın Nasıl Birikir?";
+const PAGE_DESCRIPTION =
+  "İç virajlarda altının neden biriktiğini, sahada nelere dikkat edileceğini ve doğru numune alma tekniğini anlatan saha rehberi.";
+const PAGE_URL = "https://kirintimadencilik.com/rehber/dere-kivrimlarinda-altin";
+
 export const metadata: Metadata = {
-  title: "Dere Kıvrımlarında Altın Nasıl Birikir?",
-  description:
-    "İç virajlarda altının neden biriktiğini, sahada nelere dikkat edileceğini ve doğru numune alma tekniğini anlatan saha rehberi.",
+  title: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  alternates: {
+    canonical: "/rehber/dere-kivrimlarinda-altin",
+  },
+};
+
+const ARTICLE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: PAGE_TITLE,
+  description: PAGE_DESCRIPTION,
+  url: PAGE_URL,
 };
 
 function BackToGuideLink() {
@@ -36,6 +51,10 @@ function BackToGuideLink() {
 export default function DereKivrimlarindaAltinPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(ARTICLE_JSON_LD) }}
+      />
       <Header />
       <main className="mx-auto w-full max-w-2xl flex-1 px-5 py-10 sm:px-8 sm:py-16">
         <BackToGuideLink />

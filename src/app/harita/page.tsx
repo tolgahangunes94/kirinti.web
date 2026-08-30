@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "Türkiye Altın ve Jeoloji Haritası",
   description:
     "Kuvars damarları, jeotermal hatlar, maden sahaları ve plaser altın bölgeleri — MTA kaynaklı, kanıt düzeyi etiketli interaktif Türkiye haritası.",
+  alternates: {
+    canonical: "/harita",
+  },
 };
 
 async function loadZones(): Promise<GeologicalZone[]> {

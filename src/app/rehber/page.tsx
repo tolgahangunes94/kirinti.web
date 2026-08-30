@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Saha Rehberi — Derede ve Kuvarsta Altın Arama Teknikleri",
   description:
     "Jeolojiden dere okumaya, kuvars damarı belirlemeden doğru panlama tekniğine kadar sahada işine yarayacak temel bilgiler.",
+  alternates: {
+    canonical: "/rehber",
+  },
 };
 
 export default function RehberPage() {

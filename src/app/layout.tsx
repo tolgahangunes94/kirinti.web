@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     siteName: "KırıntıMadencilik.com",
     locale: "tr_TR",
     type: "website",
-    images: [{ url: SITE_OG_IMAGE, width: 1103, height: 606 }],
+    images: [{ url: SITE_OG_IMAGE, width: 1045, height: 490 }],
   },
   twitter: {
     card: "summary_large_image",
@@ -52,6 +52,20 @@ export const metadata: Metadata = {
   },
 };
 
+const ORGANIZATION_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "KırıntıMadencilik.com",
+  url: "https://kirintimadencilik.com",
+};
+
+const WEBSITE_JSON_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "KırıntıMadencilik.com",
+  url: "https://kirintimadencilik.com",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -59,6 +73,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-background text-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_JSON_LD) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_JSON_LD) }}
+        />
         <Providers>
           <div className="flex min-h-screen">
             <Sidebar />

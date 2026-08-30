@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
 import StatsBar from "@/components/StatsBar";
@@ -10,6 +11,12 @@ import Footer from "@/components/Footer";
 import { createClient } from "@/lib/supabase/server";
 import { getPosts, type Post } from "@/lib/supabase/posts";
 import { getLikedPostIds } from "@/lib/supabase/likes";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 async function loadPosts(): Promise<Post[]> {
   try {
