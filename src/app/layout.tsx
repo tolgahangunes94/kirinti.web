@@ -84,7 +84,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Providers>
           <div className="flex min-h-screen">
             <Sidebar />
-            <div className="flex min-h-screen flex-1 flex-col pl-0 md:pl-64">
+            <div className="flex min-h-screen min-w-0 flex-1 flex-col pl-0 md:pl-64">
               {children}
             </div>
           </div>
