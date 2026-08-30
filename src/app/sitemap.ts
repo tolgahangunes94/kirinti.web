@@ -13,6 +13,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${BASE_URL}/rehber/kuvars-damarlari`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/rehber/siyah-kum`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/rehber/taban-kayasi-catlaklari`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/rehber/panlama-adimlari`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 
   let postRoutes: MetadataRoute.Sitemap = [];

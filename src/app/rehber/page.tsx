@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import GuideBoard from "@/components/GuideBoard";
+import FeaturedGuideGallery from "@/components/FeaturedGuideGallery";
 
 export const metadata: Metadata = {
   title: "Saha Rehberi — Derede ve Kuvarsta Altın Arama Teknikleri",
@@ -24,7 +25,12 @@ export default function RehberPage() {
           yarayacak temel bilgiler.
         </p>
 
-        <div className="mt-8">
+        <FeaturedGuideGallery />
+
+        <h2 className="text-balance mt-16 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+          Tüm Rehberler
+        </h2>
+        <div className="mt-6">
           <GuideBoard />
         </div>
       </main>

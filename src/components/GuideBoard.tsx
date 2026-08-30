@@ -38,6 +38,7 @@ const GUIDE_ITEMS: GuideItem[] = [
     detail:
       "Ana kayaç içinde beyaz veya gri renkli kuvars damarları, hidrotermal çözeltilerin geçmişte bu bölgeden aktığının işaretidir. Özellikle pas rengi (demir oksit) lekeler taşıyan, gözenekli ve kırılgan kuvars parçaları serbest altın barındırma ihtimali yüksek örneklerdir. Dere yatağında bu tür kuvars parçalarına rastlamak, membaya doğru bir damar kaynağının varlığına işaret edebilir.",
     icon: <path d="M10 2 4 8l6 10 6-10-6-6Z" />,
+    href: "/rehber/kuvars-damarlari",
   },
   {
     id: "hematit-limonit",
@@ -67,6 +68,7 @@ const GUIDE_ITEMS: GuideItem[] = [
         <circle cx="15" cy="14" r="1" />
       </>
     ),
+    href: "/rehber/siyah-kum",
   },
   {
     id: "inside-bend",
@@ -88,6 +90,7 @@ const GUIDE_ITEMS: GuideItem[] = [
     detail:
       "Altın çevresindeki malzemeden çok daha yoğun olduğu için, akarsu yatağındaki gevşek tortu tabakalarını zamanla aşağı doğru keser ve taban kayasına ulaşır. Taban kayasındaki her çatlak, oluk ve pürüz, akıntıya karşı doğal bir kapan görevi görür. Kazı yaparken taban kayasına ulaşmak ve bu çatlakları özenle temizlemek, verimi en çok artıran adımdır.",
     icon: <path d="M3 16 7 9l2 3 2-5 3 4 3-3" />,
+    href: "/rehber/taban-kayasi-catlaklari",
   },
   {
     id: "pothole",
@@ -130,6 +133,7 @@ const GUIDE_ITEMS: GuideItem[] = [
         <path d="M17 3v4h-4" />
       </>
     ),
+    href: "/rehber/panlama-adimlari",
   },
 ];
 
@@ -150,7 +154,7 @@ export default function GuideBoard() {
             key={tab.value}
             type="button"
             onClick={() => setCategory(tab.value)}
-            className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-medium transition-colors ${
+            className={`shrink-0 rounded-full px-4 py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
               category === tab.value
                 ? "bg-accent text-accent-foreground"
                 : "border border-border bg-surface-2 text-muted hover:text-foreground"
@@ -161,14 +165,14 @@ export default function GuideBoard() {
         ))}
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
         {filteredItems.map((item) => {
           const isOpen = expandedId === item.id;
 
           return (
             <div
               key={item.id}
-              className="rounded-2xl border border-border bg-surface p-6 transition-colors hover:border-accent/40"
+              className="motion-safe:transition-[transform,colors] motion-safe:duration-200 rounded-2xl border border-border bg-surface p-6 hover:border-accent/40 motion-safe:hover:-translate-y-0.5"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
@@ -185,22 +189,22 @@ export default function GuideBoard() {
                     {item.icon}
                   </svg>
                 </div>
-                <span className="inline-flex shrink-0 items-center rounded-full bg-accent/10 px-2.5 py-1 text-[11px] font-medium text-accent">
+                <span className="inline-flex shrink-0 items-center rounded-full border border-accent/20 bg-accent/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-accent">
                   {CATEGORY_LABELS[item.category]}
                 </span>
               </div>
 
-              <h3 className="mt-4 text-lg font-semibold text-foreground">
+              <h3 className="mt-5 text-lg font-semibold text-foreground">
                 {item.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
+              <p className="mt-2.5 text-sm leading-relaxed text-muted">
                 {item.summary}
               </p>
 
               <button
                 type="button"
                 onClick={() => setExpandedId(isOpen ? null : item.id)}
-                className="mt-4 flex items-center gap-1.5 text-xs font-medium text-accent transition-colors hover:text-accent-strong"
+                className="mt-4 flex items-center gap-1.5 rounded text-xs font-medium text-accent transition-colors hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               >
                 {isOpen ? "Detayı gizle" : "Detayı gör"}
                 <svg
@@ -227,7 +231,7 @@ export default function GuideBoard() {
               {item.href && (
                 <Link
                   href={item.href}
-                  className="mt-3 flex items-center gap-1.5 text-xs font-medium text-accent transition-colors hover:text-accent-strong"
+                  className="mt-3 flex items-center gap-1.5 rounded text-xs font-medium text-accent transition-colors hover:text-accent-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                 >
                   Devamını oku
                   <svg
