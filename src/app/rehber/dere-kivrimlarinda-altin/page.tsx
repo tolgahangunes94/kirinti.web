@@ -207,6 +207,22 @@ export default function DereKivrimlarindaAltinPage() {
           </p>
         </div>
 
+        <div className="mt-10">
+          <p className="text-xs font-medium uppercase tracking-wide text-accent">
+            İlgili Rehberler
+          </p>
+          <ul className="mt-3 flex flex-col gap-2 text-sm">
+            <li>
+              <Link
+                href="/rehber/derede-altin-nasil-bulunur"
+                className="font-medium text-accent transition-colors hover:text-accent-strong"
+              >
+                Derede Altın Nasıl Bulunur? (Tam Rehber) →
+              </Link>
+            </li>
+          </ul>
+        </div>
+
         <div className="mt-10 border-t border-border pt-6">
           <BackToGuideLink />
         </div>

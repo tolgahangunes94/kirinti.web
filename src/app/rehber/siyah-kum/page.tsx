@@ -269,6 +269,14 @@ export default function SiyahKumPage() {
                 Taban Kayası Çatlaklarında Altın Nasıl Sıkışır? →
               </Link>
             </li>
+            <li>
+              <Link
+                href="/rehber/derede-altin-nasil-bulunur"
+                className="font-medium text-accent transition-colors hover:text-accent-strong"
+              >
+                Derede Altın Nasıl Bulunur? (Tam Rehber) →
+              </Link>
+            </li>
           </ul>
         </div>
 

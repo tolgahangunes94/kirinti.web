@@ -265,6 +265,14 @@ export default function KuvarsDamarlariPage() {
                 Doğru Panlama Adım Adım Nasıl Yapılır? →
               </Link>
             </li>
+            <li>
+              <Link
+                href="/rehber/derede-altin-nasil-bulunur"
+                className="font-medium text-accent transition-colors hover:text-accent-strong"
+              >
+                Derede Altın Nasıl Bulunur? (Tam Rehber) →
+              </Link>
+            </li>
           </ul>
         </div>
 
