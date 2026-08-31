@@ -49,6 +49,7 @@ const GUIDE_ITEMS: GuideItem[] = [
     detail:
       "Hematit (kırmızı) ve limonit (sarı-kahve) alterasyonu, orijinal sülfür minerallerinin (özellikle pirit) yüzeyde oksitlenmesiyle oluşur. 'Gossan' adı verilen bu pas renkli bölgeler, altında sülfür damarları ve dolayısıyla altın mineralizasyonu barındırabilir. Saha gözleminde bu renk değişimlerini takip etmek, potansiyel kaynak bölgelerini daraltmada etkili bir yöntemdir.",
     icon: <path d="M3 6h14M3 10h14M3 14h14" />,
+    href: "/rehber/hematit-limonit",
   },
   {
     id: "siyah-kum",
@@ -95,7 +96,7 @@ const GUIDE_ITEMS: GuideItem[] = [
   {
     id: "pothole",
     category: "stream",
-    title: "Pothole Yapısı",
+    title: "Doğal Tuzak",
     summary: "Girdaplı çukurlar, yıllar içinde birikmiş doğal altın kasalarıdır.",
     detail:
       "Taban kayasındaki sert bir çıkıntı etrafında oluşan girdap, zamanla küçük çakılları döndürerek kayayı aşındırır ve dairesel 'pothole' çukurları oluşturur. Bu çukurlar hem girdap etkisiyle malzemeyi içeride tutar hem de yıllar boyunca biriken ağır mineralleri hapseder. Bir pothole'u bulup dibine kadar temizlemek, tek seferde yüksek verim sağlayabilir.",
@@ -105,6 +106,7 @@ const GUIDE_ITEMS: GuideItem[] = [
         <path d="M10 6a4 4 0 0 1 4 4" />
       </>
     ),
+    href: "/rehber/dogal-tuzak",
   },
   {
     id: "savak-egimi",
@@ -119,6 +121,7 @@ const GUIDE_ITEMS: GuideItem[] = [
         <path d="M11 6v4h4" />
       </>
     ),
+    href: "/rehber/savak-egimi",
   },
   {
     id: "panlama-adimlari",

@@ -33,6 +33,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${BASE_URL}/rehber/hematit-limonit`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/rehber/dogal-tuzak`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/rehber/savak-egimi`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
   ];
 
   let postRoutes: MetadataRoute.Sitemap = [];
