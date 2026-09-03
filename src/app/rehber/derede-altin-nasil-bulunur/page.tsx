@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
 
@@ -78,6 +79,18 @@ export default function DeredeAltinNasilBulunurPage() {
           bir başlangıç rehberidir. Her bölümün altında, konuyu derinlemesine
           işleyen ayrı bir saha rehberine link bulacaksın.
         </p>
+
+        {/* Hero görsel — public/images/rehber/derede-altin-nasil-bulunur-hero.png */}
+        <div className="relative mt-8 aspect-video w-full overflow-hidden">
+          <Image
+            src="/images/rehber/derede-altin-nasil-bulunur-hero.png"
+            alt="Dere yatağında altın arama sahasını gösteren genel bir manzara fotoğrafı"
+            fill
+            className="object-contain"
+            sizes="(min-width: 672px) 672px, 100vw"
+            priority
+          />
+        </div>
 
         <section>
           <h2 className="mt-10 text-balance text-xl font-semibold tracking-tight text-foreground">
