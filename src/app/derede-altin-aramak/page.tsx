@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import Header from "@/components/Header";
 import CommunityCta from "@/components/CommunityCta";
@@ -40,6 +41,18 @@ export default function DeredeAltinAramakPage() {
         <h1 className="text-balance mt-4 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           Derede Altın Aramak Nedir ve Nasıl Başlanır?
         </h1>
+
+        {/* Hero görsel — public/images/rehber/derede-altin-aramak-hero.png */}
+        <div className="relative mt-8 aspect-video w-full overflow-hidden">
+          <Image
+            src="/images/rehber/derede-altin-aramak-hero.png"
+            alt="Taşlık bir dere kenarında elinde pan tavasıyla altın arayan bir kişi"
+            fill
+            className="object-contain"
+            sizes="(min-width: 672px) 672px, 100vw"
+            priority
+          />
+        </div>
 
         <p className="mt-4 text-base leading-relaxed text-muted">
           Derede altın aramak, akarsuların binlerce yıl boyunca dağdan
