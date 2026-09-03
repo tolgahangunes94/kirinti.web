@@ -21,12 +21,13 @@ export type CreatePostInput = {
 export async function getPosts(
   supabase: SupabaseClient,
   limit = 20,
+  offset = 0,
 ): Promise<Post[]> {
   const { data, error } = await supabase
     .from("posts")
     .select("*")
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .range(offset, offset + limit - 1);
 
   if (error) throw error;
   return data ?? [];

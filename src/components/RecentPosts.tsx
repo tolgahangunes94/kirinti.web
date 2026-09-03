@@ -1,5 +1,5 @@
 import type { Post } from "@/lib/supabase/posts";
-import PostCard from "@/components/PostCard";
+import PostFeed from "@/components/PostFeed";
 
 type RecentPostsProps = {
   posts: Post[];
@@ -17,17 +17,15 @@ export default function RecentPosts({ posts }: RecentPostsProps) {
         </p>
 
         <div className="mt-8 flex flex-col gap-3">
-          {posts.length === 0 && (
+          {posts.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-border bg-surface-2 px-6 py-10 text-center">
               <p className="text-sm text-muted">
                 Henüz paylaşılan bir keşif yok. İlk paylaşımı sen yap!
               </p>
             </div>
+          ) : (
+            <PostFeed initialPosts={posts} />
           )}
-
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
         </div>
       </div>
     </section>
