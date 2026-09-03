@@ -8,6 +8,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getPostById } from "@/lib/supabase/posts";
 import { getCommentsByPostId } from "@/lib/supabase/comments";
 import { getLikedPostIds } from "@/lib/supabase/likes";
+import { SITE_OG_IMAGE } from "@/app/layout";
+
+const FALLBACK_OG_IMAGE = { url: SITE_OG_IMAGE, width: 1045, height: 490 };
 
 type PostPageProps = {
   params: Promise<{ id: string }>;
@@ -27,6 +30,12 @@ export async function generateMetadata({
       ? `${post.description.slice(0, 157)}...`
       : post.description;
 
+  const hasValidPostImage =
+    typeof post.image_url === "string" && post.image_url.trim().length > 0;
+  const ogImages = hasValidPostImage
+    ? [{ url: post.image_url as string }]
+    : [FALLBACK_OG_IMAGE];
+
   return {
     title,
     description,
@@ -37,13 +46,13 @@ export async function generateMetadata({
       title,
       description,
       type: "article",
-      images: post.image_url ? [post.image_url] : undefined,
+      images: ogImages,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: post.image_url ? [post.image_url] : undefined,
+      images: ogImages,
     },
   };
 }

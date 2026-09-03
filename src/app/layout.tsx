@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 const SITE_TITLE = "Kırıntı Madencilik | KırıntıMadencilik.com";
 const SITE_DESCRIPTION =
   "Kırıntı madencilik meraklıları için Türkiye'nin saha ve jeoloji platformu — kaynaklı veriyi incele, saha notlarını gizlice kaydet, deneyimini paylaş.";
-const SITE_OG_IMAGE = "/images/turkiye-altin-haritasi-preview-v3.png";
+export const SITE_OG_IMAGE = "/images/turkiye-altin-haritasi-preview-v3.png";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kirintimadencilik.com"),
