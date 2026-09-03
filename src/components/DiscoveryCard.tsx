@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Discovery } from "@/lib/supabase/discoveries";
 import DeleteDiscoveryButton from "@/components/DeleteDiscoveryButton";
 import EditDiscoveryButton from "@/components/EditDiscoveryButton";
@@ -63,43 +64,45 @@ export default function DiscoveryCard({ discovery }: DiscoveryCardProps) {
         />
       </div>
 
-      <div className="flex items-start justify-between gap-2 pr-20">
-        <div className="flex items-center gap-1.5 text-xs font-medium text-accent">
-          <LocationIcon />
-          {location}
+      <Link href={`/kesifler/${discovery.id}`} className="block">
+        <div className="flex items-start justify-between gap-2 pr-20">
+          <div className="flex items-center gap-1.5 text-xs font-medium text-accent">
+            <LocationIcon />
+            {location}
+          </div>
+
+          <span className="flex shrink-0 items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium text-muted">
+            <LockIcon />
+            Sadece sana görünür
+          </span>
         </div>
 
-        <span className="flex shrink-0 items-center gap-1 rounded-full bg-surface-2 px-2 py-0.5 text-[10px] font-medium text-muted">
-          <LockIcon />
-          Sadece sana görünür
-        </span>
-      </div>
+        {(discovery.village_or_area ||
+          discovery.stream_or_site_name ||
+          discovery.rock_type) && (
+          <div className="mt-2 flex flex-wrap gap-1.5">
+            {discovery.village_or_area && (
+              <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-foreground">
+                Köy/Mevki: {discovery.village_or_area}
+              </span>
+            )}
+            {discovery.stream_or_site_name && (
+              <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-foreground">
+                Dere/Saha: {discovery.stream_or_site_name}
+              </span>
+            )}
+            {discovery.rock_type && (
+              <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-foreground">
+                Kayaç: {discovery.rock_type}
+              </span>
+            )}
+          </div>
+        )}
 
-      {(discovery.village_or_area ||
-        discovery.stream_or_site_name ||
-        discovery.rock_type) && (
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {discovery.village_or_area && (
-            <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-foreground">
-              Köy/Mevki: {discovery.village_or_area}
-            </span>
-          )}
-          {discovery.stream_or_site_name && (
-            <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-foreground">
-              Dere/Saha: {discovery.stream_or_site_name}
-            </span>
-          )}
-          {discovery.rock_type && (
-            <span className="rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-foreground">
-              Kayaç: {discovery.rock_type}
-            </span>
-          )}
-        </div>
-      )}
-
-      <p className="mt-3 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-foreground">
-        {discovery.field_notes}
-      </p>
+        <p className="mt-3 line-clamp-3 whitespace-pre-line text-sm leading-relaxed text-foreground">
+          {discovery.field_notes}
+        </p>
+      </Link>
 
       {discovery.images.length > 0 && (
         <div className="mt-3 flex gap-2">

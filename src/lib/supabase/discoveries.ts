@@ -114,6 +114,32 @@ export async function getDiscoveries(
   }));
 }
 
+export async function getDiscoveryById(
+  supabase: SupabaseClient,
+  id: string,
+): Promise<Discovery | null> {
+  const { data, error } = await supabase
+    .from("discoveries")
+    .select("*, discovery_images(id, image_path, position)")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) throw error;
+  if (!data) return null;
+
+  const { discovery_images, ...row } = data as DiscoveryRow;
+  const paths = discovery_images.map((img) => img.image_path);
+  const signedUrls = await getSignedImageUrls(supabase, paths);
+
+  return {
+    ...row,
+    images: discovery_images
+      .slice()
+      .sort((a, b) => a.position - b.position)
+      .map((img) => ({ ...img, url: signedUrls.get(img.image_path) })),
+  };
+}
+
 export async function createDiscovery(
   supabase: SupabaseClient,
   input: CreateDiscoveryInput,
