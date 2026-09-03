@@ -9,6 +9,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/harita`, changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/rehber`, changeFrequency: "monthly", priority: 0.8 },
     {
+      url: `${BASE_URL}/derede-altin-aramak`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${BASE_URL}/rehber/derede-altin-nasil-bulunur`,
       changeFrequency: "monthly",
       priority: 0.75,
