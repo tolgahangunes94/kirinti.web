@@ -14,8 +14,6 @@ export type Profile = {
   id: string;
   full_name: string | null;
   avatar_url: string | null;
-  title: string | null;
-  points: number;
   post_count: number;
   discovery_count: number;
   follower_count: number;

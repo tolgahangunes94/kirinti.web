@@ -62,18 +62,8 @@ export default function SidebarProfileCard() {
           <p className="truncate text-sm font-semibold text-foreground">
             {profile.full_name ?? "İsimsiz Keşifçi"}
           </p>
-          <span className="mt-1 inline-flex items-center rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">
-            {profile.title ?? "Yeni Keşifçi"}
-          </span>
         </div>
       </div>
-
-      <p className="mt-3 text-xs font-medium text-muted">
-        <span className="text-accent">
-          {profile.points.toLocaleString("tr-TR")}
-        </span>{" "}
-        Puan
-      </p>
 
       <div className="mt-4 grid grid-cols-3 gap-2 border-t border-border pt-4 text-center">
         {[

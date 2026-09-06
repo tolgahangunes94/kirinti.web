@@ -27,21 +27,11 @@ export default function ProfileHeader({ profile }: ProfileHeaderProps) {
             <h1 className="truncate text-xl font-semibold tracking-tight text-foreground">
               {profile.full_name ?? "İsimsiz Keşifçi"}
             </h1>
-            <span className="mt-1.5 inline-flex items-center rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
-              {profile.title ?? "Yeni Keşifçi"}
-            </span>
           </div>
         </div>
 
         <EditProfileButton profile={profile} />
       </div>
-
-      <p className="mt-4 text-sm font-medium text-muted">
-        <span className="text-accent">
-          {profile.points.toLocaleString("tr-TR")}
-        </span>{" "}
-        Puan
-      </p>
 
       <div className="mt-6 grid grid-cols-3 gap-4 border-t border-border pt-6 text-center">
         {[
