@@ -1253,3 +1253,21 @@ create policy "avatars bucket kullanıcı kendi dosyasını siler"
     bucket_id = 'avatars'
     and (storage.foldername(name))[1] = auth.uid()::text
   );
+
+-- Güvenlik sertleştirmesi: profiles/posts kolon bazlı UPDATE yetkisi (2026-09-06 pre-launch audit HIGH #1)
+-- Sorun: RLS sadece satır sahipliğini kontrol ediyordu, hangi KOLONLARIN güncellenebileceğini
+-- kısıtlamıyordu. Kullanıcı kendi satırında dahi normalde sadece trigger'ın yazması gereken
+-- sayaç kolonlarını (profiles.post_count/discovery_count/follower_count/points/title,
+-- posts.likes_count/comments_count) doğrudan REST ile PATCH edebiliyordu.
+-- Trigger fonksiyonları (handle_post_count, handle_discovery_count, handle_post_likes_count,
+-- handle_post_comments_count, handle_new_user) hepsi `security definer` — fonksiyon SAHİBİNİN
+-- yetkileriyle çalışırlar, aşağıdaki REVOKE'lardan etkilenmezler, saymaya devam ederler.
+
+-- profiles: sadece full_name ve avatar_url authenticated tarafından güncellenebilir kalsın.
+revoke update on public.profiles from authenticated, anon;
+grant update (full_name, avatar_url) on public.profiles to authenticated;
+
+-- posts: şu an post düzenleme UI'ı/kodu yok, hiçbir kolonun authenticated tarafından
+-- doğrudan güncellenmesine ihtiyaç yok. UPDATE tamamen kapatılıyor.
+-- İleride post düzenleme eklenirse: grant update (location, description, image_url) on public.posts to authenticated;
+revoke update on public.posts from authenticated, anon;
