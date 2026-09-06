@@ -1232,3 +1232,24 @@ select
 where not exists (
   select 1 from public.geological_zones where title = 'Yellikıran–Kağızman Altın Bölgesi'
 );
+
+-- Storage: "avatars" bucket politikaları
+-- (bucket'ı public olarak Supabase Storage panelinden oluşturduktan sonra çalıştır)
+
+create policy "avatars bucket herkese açık okuma"
+  on storage.objects for select
+  using (bucket_id = 'avatars');
+
+create policy "avatars bucket kullanıcı kendi klasörüne yükler"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'avatars'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
+
+create policy "avatars bucket kullanıcı kendi dosyasını siler"
+  on storage.objects for delete
+  using (
+    bucket_id = 'avatars'
+    and (storage.foldername(name))[1] = auth.uid()::text
+  );
