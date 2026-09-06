@@ -19,6 +19,13 @@ export default function PostFeed({ initialPosts }: PostFeedProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(initialPosts.length >= PAGE_SIZE);
+  const [prevInitialPosts, setPrevInitialPosts] = useState(initialPosts);
+
+  if (initialPosts !== prevInitialPosts) {
+    setPrevInitialPosts(initialPosts);
+    setPosts(initialPosts);
+    setHasMore(initialPosts.length >= PAGE_SIZE);
+  }
 
   async function handleLoadMore() {
     if (loading || !hasMore) return;
