@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthModal } from "@/components/auth/AuthModalProvider";
 import { useAuth } from "@/lib/supabase/AuthProvider";
-import { createClient } from "@/lib/supabase/client";
 import CreatePostModal from "@/components/CreatePostModal";
 import { getInitials } from "@/lib/getInitials";
 
@@ -44,9 +43,34 @@ function LogoutIcon() {
 
 export default function Header() {
   const [createPostOpen, setCreatePostOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const { openAuthModal } = useAuthModal();
-  const { user, profile } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const router = useRouter();
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!accountMenuOpen) return;
+
+    function handleOutsideInteraction(event: MouseEvent | TouchEvent) {
+      if (!accountMenuRef.current?.contains(event.target as Node)) {
+        setAccountMenuOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setAccountMenuOpen(false);
+    }
+
+    document.addEventListener("mousedown", handleOutsideInteraction);
+    document.addEventListener("touchstart", handleOutsideInteraction);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideInteraction);
+      document.removeEventListener("touchstart", handleOutsideInteraction);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [accountMenuOpen]);
 
   function handleCtaClick() {
     if (user) {
@@ -57,8 +81,8 @@ export default function Header() {
   }
 
   async function handleSignOut() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    setAccountMenuOpen(false);
+    await signOut();
     router.refresh();
   }
 
@@ -88,27 +112,53 @@ export default function Header() {
             </button>
 
             {user && (
-              <button
-                type="button"
-                onClick={handleSignOut}
-                title="Çıkış Yap"
-                aria-label="Çıkış Yap"
-                className="group relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-2 text-xs font-bold text-foreground transition-colors hover:border-accent/60"
-              >
-                {profile?.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={profile.avatar_url}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span>{getInitials(profile?.full_name)}</span>
+              <div ref={accountMenuRef} className="relative">
+                <button
+                  type="button"
+                  onClick={() => setAccountMenuOpen((open) => !open)}
+                  title="Hesabım"
+                  aria-label="Hesabım"
+                  aria-haspopup="menu"
+                  aria-expanded={accountMenuOpen}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-2 text-xs font-bold text-foreground transition-colors hover:border-accent/60"
+                >
+                  {profile?.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={profile.avatar_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <span>{getInitials(profile?.full_name)}</span>
+                  )}
+                </button>
+
+                {accountMenuOpen && (
+                  <div
+                    role="menu"
+                    className="absolute right-0 top-full mt-2 w-44 overflow-hidden rounded-xl border border-border bg-surface shadow-lg"
+                  >
+                    <Link
+                      href="/profile"
+                      role="menuitem"
+                      onClick={() => setAccountMenuOpen(false)}
+                      className="block px-4 py-2.5 text-sm text-foreground transition-colors hover:bg-surface-2"
+                    >
+                      Profilim
+                    </Link>
+                    <button
+                      type="button"
+                      role="menuitem"
+                      onClick={handleSignOut}
+                      className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-foreground transition-colors hover:bg-surface-2"
+                    >
+                      <LogoutIcon />
+                      Çıkış Yap
+                    </button>
+                  </div>
                 )}
-                <span className="absolute inset-0 flex items-center justify-center bg-black/70 text-white opacity-0 transition-opacity group-hover:opacity-100">
-                  <LogoutIcon />
-                </span>
-              </button>
+              </div>
             )}
           </div>
         </div>
