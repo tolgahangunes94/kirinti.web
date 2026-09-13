@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline';
+  script-src 'self' 'unsafe-inline' https://www.googletagmanager.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' blob: data: https://pkhfcmdpbmdnxsakooqw.supabase.co https://api.maptiler.com https://*.tile.openstreetmap.org;
   font-src 'self';
-  connect-src 'self' https://pkhfcmdpbmdnxsakooqw.supabase.co;
+  connect-src 'self' https://pkhfcmdpbmdnxsakooqw.supabase.co https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com;
   object-src 'none';
   base-uri 'self';
   form-action 'self';

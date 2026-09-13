@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import Sidebar from "@/components/Sidebar";
 import Providers from "@/components/Providers";
 import "./globals.css";
@@ -66,6 +67,8 @@ const WEBSITE_JSON_LD = {
   url: "https://kirintimadencilik.com",
 };
 
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -89,6 +92,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </div>
         </Providers>
+        {GA_MEASUREMENT_ID && <GoogleAnalytics gaId={GA_MEASUREMENT_ID} />}
       </body>
     </html>
   );
